@@ -561,7 +561,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  mouseSensitivity: 100
   cameraTransform: {fileID: 838722852}
 --- !u!1 &832575517
 GameObject:
@@ -624,7 +623,7 @@ GameObject:
   - component: {fileID: 838722856}
   - component: {fileID: 838722855}
   - component: {fileID: 838722854}
-  - component: {fileID: 838722853}
+  - component: {fileID: 838722857}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -647,23 +646,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1015346827}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &838722853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 838722851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3f9346c04fbb684abaeba9406e81a49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offSet: {x: 0, y: 1, z: 0}
-  target: {fileID: 499373776}
-  mouseSensitivity: 200
-  distanceFromPlayer: 5
-  verticalAngleLimit: 80
 --- !u!114 &838722854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -767,6 +749,23 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &838722857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838722851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f9346c04fbb684abaeba9406e81a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offSet: {x: 0, y: 0, z: 0}
+  target: {fileID: 499373776}
+  mouseSensitivity: 100
+  distanceFromPlayer: 5
+  verticalAngleLimit: 80
 --- !u!1 &1015346826
 GameObject:
   m_ObjectHideFlags: 0
