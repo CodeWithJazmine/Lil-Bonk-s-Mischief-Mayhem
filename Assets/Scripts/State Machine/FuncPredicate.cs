@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections;
+
 namespace StateMachine
 {
     public class FuncPredicate : IPredicate

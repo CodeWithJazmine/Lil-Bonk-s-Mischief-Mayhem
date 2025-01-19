@@ -4,7 +4,7 @@ namespace StateMachine
 {
     public abstract class BaseState : IState
     {
-        protected readonly PlayerMovement player;
+        protected readonly PlayerMovement controller;
         protected readonly Animator animator;
 
         // Hashed Animations so we can control animations through code
@@ -13,9 +13,9 @@ namespace StateMachine
 
         protected const float crossFadeDuration = 0.1f;
 
-        protected BaseState(PlayerMovement player, Animator animator)
+        protected BaseState(PlayerMovement controller, Animator animator)
         {
-            this.player = player;
+            this.controller = controller;
             this.animator = animator;
         }
 
