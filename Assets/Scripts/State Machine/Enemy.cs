@@ -25,7 +25,7 @@ namespace StateMachine
         {
             stateMachine = new FSM();
 
-            var wanderState = new WanderState(this, animator, agent, 5f);
+            var wanderState = new WanderState(this, animator, agent, 5f, waitTimeMin, waitTimeMax);
 
             Any(wanderState, new FuncPredicate(() => true)); // Always true for testing
 

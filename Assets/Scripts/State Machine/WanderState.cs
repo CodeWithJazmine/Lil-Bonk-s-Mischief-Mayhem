@@ -3,23 +3,22 @@ using UnityEngine.AI;
 
 namespace StateMachine
 {
-    public class PlayerDetector : MonoBehaviour
-    {
-
-    }
-
     public class WanderState : BaseState
     {
         readonly NavMeshAgent agent;
         readonly Vector3 startPoint;
         readonly float wanderRadius;
-        readonly float waitTime;
+        readonly float waitTimeMin, waitTimeMax;
+        private bool idle = false;
+        private CountdownTimer timer = new();
 
-        public WanderState(Enemy enemy, Animator animator, NavMeshAgent agent, float wanderRadius) : base(enemy, animator)
+        public WanderState(Enemy enemy, Animator animator, NavMeshAgent agent, float wanderRadius, float waitTimeMin = 1f, float waitTimeMax = 2f) : base(enemy, animator)
         {
             this.agent = agent;
             this.startPoint = startPoint;
             this.wanderRadius = wanderRadius;
+            this.waitTimeMin = waitTimeMin;
+            this.waitTimeMax = waitTimeMax;
         }
 
         public override void OnEnter()
@@ -30,15 +29,29 @@ namespace StateMachine
 
         public override void OnUpdate()
         {
-            if(HasReachedDestination())
+            if(HasReachedDestination() && !idle)
             {
-                // Find new destination
-                var randomDirection = Random.insideUnitSphere * wanderRadius;
-                randomDirection += startPoint;
-                NavMeshHit hit;
-                NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
-                var finalPosition = hit.position;
-                agent.SetDestination(finalPosition);
+                animator.CrossFade(IdleHash, crossFadeDuration);
+                timer.Reset(Random.Range(waitTimeMin, waitTimeMax));
+                idle = true;
+            }
+
+            if(idle)
+            {
+                timer.Tick(Time.deltaTime);
+
+                if(timer.TimeReached())
+                {
+                    // Find new destination
+                    var randomDirection = Random.insideUnitSphere * wanderRadius;
+                    randomDirection += startPoint;
+                    NavMeshHit hit;
+                    NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
+                    var finalPosition = hit.position;
+                    agent.SetDestination(finalPosition);
+                    animator.CrossFade(WalkHash, crossFadeDuration);
+                    idle = false;
+                }
             }
         }
 
