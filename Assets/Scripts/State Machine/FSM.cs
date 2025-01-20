@@ -9,7 +9,7 @@ namespace StateMachine
         Dictionary<Type, StateNode> nodes = new Dictionary<Type, StateNode>();
         HashSet<ITransition> anyTransitions = new HashSet<ITransition>();
 
-        private void Update()
+        public void Update()
         {
             var transition = GetTransition();
 
@@ -19,7 +19,7 @@ namespace StateMachine
             current.State?.OnUpdate();
         }
 
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
             current.State.OnFixedUpdate();
         }
