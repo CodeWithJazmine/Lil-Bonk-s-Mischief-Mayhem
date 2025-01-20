@@ -6,16 +6,26 @@ namespace StateMachine
     [RequireComponent(typeof(NavMeshAgent))]
     public class Enemy : MonoBehaviour, IBonkable
     {
-        private NavMeshAgent agent;
-        private Animator animator;
+        [SerializeField] NavMeshAgent agent;
+        [SerializeField] Animator animator;
 
         FSM stateMachine;
 
-        void OnValidate() => this.OnValidate();
+        void Awake()
+        {
+            agent = GetComponent<NavMeshAgent>();
+            animator = GetComponent<Animator>();
+        }
 
         void Start()
         {
             stateMachine = new FSM();
+
+            var wanderState = new WanderState(this, animator, agent, 5f);
+
+            Any(wanderState, new FuncPredicate(() => true)); // Always true for testing
+
+            stateMachine.SetState(wanderState);
         }
 
         void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);

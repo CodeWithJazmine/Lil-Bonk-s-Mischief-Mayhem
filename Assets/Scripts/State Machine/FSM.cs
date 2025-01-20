@@ -6,8 +6,8 @@ namespace StateMachine
     public class FSM
     {
         StateNode current;
-        Dictionary<Type, StateNode> nodes = new Dictionary<Type, StateNode>();
-        HashSet<ITransition> anyTransitions = new HashSet<ITransition>();
+        Dictionary<Type, StateNode> nodes = new();
+        HashSet<ITransition> anyTransitions = new();
 
         public void Update()
         {
@@ -78,7 +78,7 @@ namespace StateMachine
 
         public void AddAnyTransition(IState to, IPredicate condition)
         {
-            anyTransitions.Add(new Transition(to, condition));
+            anyTransitions.Add(new Transition(GetOrAddNode(to).State, condition));
         }
 
         class StateNode
