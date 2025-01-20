@@ -49,5 +49,11 @@ namespace StateMachine
         {
 
         }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, wanderRadius);
+        }
     }
 }
