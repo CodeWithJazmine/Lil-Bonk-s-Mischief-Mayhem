@@ -3,11 +3,17 @@ using UnityEngine.AI;
 
 namespace StateMachine
 {
+    public class PlayerDetector : MonoBehaviour
+    {
+
+    }
+
     public class WanderState : BaseState
     {
         readonly NavMeshAgent agent;
         readonly Vector3 startPoint;
         readonly float wanderRadius;
+        readonly float waitTime;
 
         public WanderState(Enemy enemy, Animator animator, NavMeshAgent agent, float wanderRadius) : base(enemy, animator)
         {
