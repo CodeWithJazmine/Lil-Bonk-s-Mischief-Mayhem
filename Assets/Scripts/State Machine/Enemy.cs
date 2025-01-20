@@ -9,6 +9,10 @@ namespace StateMachine
         [SerializeField] NavMeshAgent agent;
         [SerializeField] Animator animator;
 
+        [SerializeField] float wanderRadius = 5f;
+        [SerializeField] float waitTimeMin = 1.5f;
+        [SerializeField] float waitTimeMax = 5f;
+
         FSM stateMachine;
 
         void Awake()
