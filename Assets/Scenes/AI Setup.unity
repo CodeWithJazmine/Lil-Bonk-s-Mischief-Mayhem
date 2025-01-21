@@ -1079,6 +1079,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1806973787527200121, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
+      propertyPath: fleeDistance
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

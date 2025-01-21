@@ -84,9 +84,6 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         agent.speed = wanderSpeed;
 
-        // Move toward the wander target
-        transform.position = Vector3.MoveTowards(transform.position, wanderTarget, wanderSpeed * Time.deltaTime);
-
         // Check if the enemy has reached the wander target
         if (HasReachedDestination())
         {
