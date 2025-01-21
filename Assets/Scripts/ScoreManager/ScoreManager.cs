@@ -26,7 +26,7 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    public void OnPlayerBonk(int basePoints)
+    public void HandleBonk(int basePoints)
     {
         // Add points with multiplier
         currentScore += Mathf.CeilToInt(basePoints * multiplier);
@@ -75,6 +75,6 @@ public class ScoreManager : MonoBehaviour
     [ContextMenu("Add Debug Score")]
     public void DebugOnPlayerBonk()
     {
-        OnPlayerBonk(100); 
+        HandleBonk(100); 
     }
 }
