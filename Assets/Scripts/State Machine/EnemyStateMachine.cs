@@ -8,7 +8,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         Wander,
         Wait,
-        Flee
+        Flee,
+        Bonked,
+        Flinch
     }
 
     private State currentState;
@@ -22,6 +24,12 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float minWaitTime = 2f; // Minimum wait time
     [SerializeField] private float maxWaitTime = 5f; // Maximum wait time
     [SerializeField] private float fleeRadius = 3f;
+    [SerializeField] private float bonkResistance = 0;
+    [SerializeField] private float bonkResistGain = 0.1f;
+    [SerializeField] private float bonkResistMax = 0.75f;
+    [SerializeField] private float bonkedTime = 2f;
+    float currentBonkedTime = 0;
+
     NavMeshAgent agent;
     Animator animator;
 
@@ -65,6 +73,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             case State.Flee:
                 Flee();
                 break;
+            case State.Bonked:
+                break;
+
         }
 
         // Transition logic
@@ -176,6 +187,24 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     public void OnBonked()
     {
-        throw new System.NotImplementedException();
+        var rand = Random.Range(0f, 1f);
+        if(rand >= 0.95f) // Super Bonk
+        {
+
+        }
+
+        if(rand >= bonkResistance)
+        {
+
+        }
+    }
+
+    public void OnBonked(float value)
+    {
+        // If value = 1 enemy is super bonked
+
+        // If value >= bonkResistance, enemy is bonked.
+
+        // Else enemy will flinch momentarily
     }
 }
