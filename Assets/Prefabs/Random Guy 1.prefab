@@ -65,7 +65,7 @@ PrefabInstance:
       addedObject: {fileID: 7037177598776685868}
     - targetCorrespondingSourceObject: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3006300661443993025}
+      addedObject: {fileID: 1806973787527200121}
   m_SourcePrefab: {fileID: 100100000, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
 --- !u!1 &120538334217694610 stripped
 GameObject:
@@ -94,7 +94,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &3006300661443993025
+--- !u!114 &1806973787527200121
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,11 +103,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 120538334217694610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef07be4e6a38ecd41b3f08f08550efe0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e8e0f3a519e1ed4aa6b685d94af6cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  animator: {fileID: 0}
-  wanderRadius: 5
-  waitTimeMin: 1.5
-  waitTimeMax: 5
+  player: {fileID: 0}
+  fleeDistance: 5
+  wanderRadius: 10
+  wanderSpeed: 2
+  fleeSpeed: 6
+  minWaitTime: 2
+  maxWaitTime: 5
+  fleeRadius: 3
+  crossFade: 0.1

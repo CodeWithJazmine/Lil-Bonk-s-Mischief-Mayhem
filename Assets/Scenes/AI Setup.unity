@@ -240,32 +240,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 604712594}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &220954444 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 120538334217694610, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
-  m_PrefabInstance: {fileID: 6199353456423825434}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &220954445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 220954444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e8e0f3a519e1ed4aa6b685d94af6cc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  fleeDistance: 5
-  wanderRadius: 10
-  wanderSpeed: 2
-  fleeSpeed: 6
-  minWaitTime: 2
-  maxWaitTime: 5
-  fleeRadius: 3
-  crossFade: 0.1
 --- !u!1 &604712593
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,14 +1067,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Random Guy 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3006300661443993025, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 120538334217694610, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 220954445}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
