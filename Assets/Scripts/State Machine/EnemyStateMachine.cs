@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyStateMachine : MonoBehaviour, IBonkable
 {
@@ -15,10 +16,13 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     // References
     [SerializeField] private Transform player;
     [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
+    [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float wanderSpeed = 2f;
     [SerializeField] private float fleeSpeed = 4f;
     [SerializeField] private float minWaitTime = 2f; // Minimum wait time
     [SerializeField] private float maxWaitTime = 5f; // Maximum wait time
+    [SerializeField] private float fleeRadius = 3f;
+    NavMeshAgent agent;
     Animator animator;
 
     // Animations
@@ -37,6 +41,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Start()
@@ -77,22 +82,16 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     private void Wander()
     {
+        agent.speed = wanderSpeed;
+
         // Move toward the wander target
         transform.position = Vector3.MoveTowards(transform.position, wanderTarget, wanderSpeed * Time.deltaTime);
 
         // Check if the enemy has reached the wander target
-        if (Vector3.Distance(transform.position, wanderTarget) < 0.5f)
+        if (HasReachedDestination())
         {
             currentState = State.Wait;
             waitTimer = Random.Range(minWaitTime, maxWaitTime); // Set a random wait time
-        }
-
-        // Face the wander target
-        Vector3 direction = wanderTarget - transform.position;
-        direction.y = 0; // Lock rotation to the Y-axis
-        if (direction != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(direction);
         }
 
         if(!isWalking)
@@ -101,6 +100,13 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         isWalking = true;
         isRunning = false;
         isIdle = false;
+    }
+
+    bool HasReachedDestination()
+    {
+        return !agent.pathPending
+            && agent.remainingDistance <= agent.stoppingDistance
+            && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f);
     }
 
     private void Wait()
@@ -126,22 +132,24 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private void SetNewWanderTarget()
     {
         // Pick a random point within a 10-unit radius
-        Vector3 randomDirection = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
-        wanderTarget = transform.position + randomDirection;
+        var randomDirection = Random.insideUnitSphere * wanderRadius;
+        randomDirection += transform.position;
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
+        wanderTarget = hit.position;
+        agent.SetDestination(wanderTarget);
     }
 
     private void Flee()
     {
-        // Calculate direction away from the player
-        Vector3 fleeDirection = (transform.position - player.position).normalized;
-
-        // Move in the flee direction
-        transform.position += fleeDirection * fleeSpeed * Time.deltaTime;
-
-        // Face the flee direction
-        if (fleeDirection != Vector3.zero)
+        if (!agent.hasPath)
         {
-            transform.rotation = Quaternion.LookRotation(fleeDirection);
+            Vector3 fleePosition = GetFleePosition();
+            if (fleePosition != Vector3.zero)
+            {
+                agent.speed = fleeSpeed;
+                agent.SetDestination(fleePosition);
+            }
         }
 
         if (!isRunning)
@@ -150,6 +158,23 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         isWalking = false;
         isRunning = true;
         isIdle = false;
+    }
+
+    private Vector3 GetFleePosition()
+    {
+        // Calculate direction away from the player
+        Vector3 fleeDirection = (transform.position - player.position).normalized;
+
+        // Propose a flee target by adding fleeDirection scaled by fleeRadius
+        Vector3 proposedFleePosition = transform.position + fleeDirection * fleeRadius;
+
+        // Check if the proposed position is on the NavMesh
+        if (NavMesh.SamplePosition(proposedFleePosition, out NavMeshHit hit, fleeRadius, NavMesh.AllAreas))
+        {
+            return hit.position; // Return the closest valid position on the NavMesh
+        }
+
+        return Vector3.zero; // Return zero vector if no valid position is found
     }
 
     public void OnBonked()
