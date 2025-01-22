@@ -289,6 +289,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: 3923983671766063519, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4030642238299649802, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
       propertyPath: m_TagString
       value: Player
@@ -1078,6 +1082,14 @@ PrefabInstance:
     - target: {fileID: 120538334219891594, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1806973787527200121, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
+      propertyPath: crossFade
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1806973787527200121, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
+      propertyPath: fleeSpeed
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 1806973787527200121, guid: 377427cf8f6609b4e98a6e469825ab29, type: 3}
       propertyPath: fleeDistance

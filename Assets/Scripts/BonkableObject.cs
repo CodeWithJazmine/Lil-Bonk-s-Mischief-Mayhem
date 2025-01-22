@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BonkableObject : MonoBehaviour, IBonkable
 {
-    public void OnBonked()
+    public void OnBonked(float value)
     {
        
         

@@ -1,8 +1,13 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyStateMachine : MonoBehaviour, IBonkable
 {
+    public bool bonk, superBonk;
+    public delegate void EnemyBonked();
+    public event EnemyBonked OnEnemyBonked;
+
     // States
     private enum State
     {
@@ -10,7 +15,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         Wait,
         Flee,
         Bonked,
-        Flinch
+        Getup
     }
 
     private State currentState;
@@ -28,7 +33,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float bonkResistGain = 0.1f;
     [SerializeField] private float bonkResistMax = 0.75f;
     [SerializeField] private float bonkedTime = 2f;
-    float currentBonkedTime = 0;
+    [SerializeField] private float getupTime = 1.5f;
+    [SerializeField] float currentBonkedTime = 0;
+    [SerializeField] float currentGetupTime;
 
     NavMeshAgent agent;
     Animator animator;
@@ -37,7 +44,11 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private static readonly int IdleHash = Animator.StringToHash("Idle");
     private static readonly int WalkHash = Animator.StringToHash("Walk");
     private static readonly int RunHash = Animator.StringToHash("Run");
-    private static readonly int KnockoutHash = Animator.StringToHash("Knockout");
+    private static readonly int BonkedHash = Animator.StringToHash("Bonked");
+    private static readonly int SuperBonkedHash = Animator.StringToHash("SuperBonked");
+    private static readonly int GetupHash = Animator.StringToHash("Getup");
+    private static readonly int BoundHash = Animator.StringToHash("Bound");
+
     [SerializeField] float crossFade = 0.1f;
     bool isWalking = false;
     bool isRunning = false;
@@ -62,6 +73,18 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     void Update()
     {
+        if(bonk)
+        {
+            OnBonked(Random.Range(0f, 1f));
+            bonk = false;    
+        }
+
+        if (superBonk)
+        {
+            OnBonked(1f);
+            superBonk = false;
+        }
+
         switch (currentState)
         {
             case State.Wander:
@@ -75,19 +98,43 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
                 break;
             case State.Bonked:
                 break;
-
+            case State.Getup:
+                break;
         }
 
         // Transition logic
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < fleeDistance)
+        if (distanceToPlayer < fleeDistance 
+            && currentState != State.Bonked
+            && currentState != State.Getup)
         {
             currentState = State.Flee;
         }
+
         else if (currentState == State.Flee && distanceToPlayer >= fleeDistance)
         {
             currentState = State.Wander;
             SetNewWanderTarget();
+        }
+
+        else if(currentState == State.Bonked)
+        {
+            currentBonkedTime += Time.deltaTime;
+            if(currentBonkedTime >= bonkedTime)
+            {
+                currentState = State.Getup;
+                animator.CrossFade(GetupHash, crossFade);
+                currentGetupTime = 0;
+            }
+        }
+
+        else if(currentState == State.Getup)
+        {
+            currentGetupTime += Time.deltaTime;
+            if (currentGetupTime >= getupTime)
+                currentState = State.Wander;
+
+            agent.isStopped = false;
         }
     }
 
@@ -185,26 +232,54 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         return Vector3.zero; // Return zero vector if no valid position is found
     }
 
-    public void OnBonked()
-    {
-        var rand = Random.Range(0f, 1f);
-        if(rand >= 0.95f) // Super Bonk
-        {
-
-        }
-
-        if(rand >= bonkResistance)
-        {
-
-        }
-    }
-
     public void OnBonked(float value)
     {
+        // If already bonked, or getting up play bound animation
+        if(currentState == State.Bonked || currentState == State.Getup)
+        {
+            agent.isStopped = true;
+            agent.Warp(transform.position);
+            currentBonkedTime = 0;
+            currentGetupTime = 0;
+            animator.CrossFade(BoundHash, crossFade);
+            OnEnemyBonked?.Invoke();
+            isWalking = false;
+            isRunning = false;
+            isIdle = false;
+            return; // To prevent other ifs from firing
+        }
+
         // If value = 1 enemy is super bonked
+        if(value >= 1f)
+        {
+            Debug.Log("SUPER BONKED");
+            agent.isStopped = true;
+            agent.Warp(transform.position);
+            currentState = State.Bonked;
+            animator.CrossFade(SuperBonkedHash, crossFade);
+            currentBonkedTime = 0;
+            isWalking = false;
+            isRunning = false;
+            isIdle = false;
+            OnEnemyBonked?.Invoke();
+            return;
+        }    
 
         // If value >= bonkResistance, enemy is bonked.
-
-        // Else enemy will flinch momentarily
+        // Increase bonk resistance
+        if(value >= bonkResistance)
+        {
+            agent.isStopped = true;
+            agent.Warp(transform.position);
+            currentState = State.Bonked;
+            animator.CrossFade(BonkedHash, crossFade);
+            currentBonkedTime = 0;
+            bonkResistance += bonkResistGain;
+            if (bonkResistance >= bonkResistMax) bonkResistance = bonkResistMax;
+            isWalking = false;
+            isRunning = false;
+            isIdle = false;
+            OnEnemyBonked?.Invoke();
+        }
     }
 }
