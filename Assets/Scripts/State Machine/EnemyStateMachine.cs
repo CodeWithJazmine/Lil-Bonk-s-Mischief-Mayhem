@@ -241,7 +241,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             agent.Warp(transform.position);
             currentBonkedTime = 0;
             currentGetupTime = 0;
-            animator.CrossFade(BoundHash, crossFade);
+            animator.Play(BoundHash, -1, 0);
             OnEnemyBonked?.Invoke();
             isWalking = false;
             isRunning = false;
