@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5081664013912013522}
   - component: {fileID: 6418122897356992782}
-  - component: {fileID: 6250691183423963244}
   m_Layer: 5
   m_Name: ChaosMeter
   m_TagString: Untagged
@@ -88,26 +87,6 @@ MonoBehaviour:
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &6250691183423963244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1832456444680860853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a81a290810240543a64a49986fc8ec9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chaosIncreasePerBonk: 20
-  chaosMeterSlider: {fileID: 6418122897356992782}
-  OnChaosMaxed:
-    m_PersistentCalls:
-      m_Calls: []
-  OnChaosReset:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &3135199311472906346
