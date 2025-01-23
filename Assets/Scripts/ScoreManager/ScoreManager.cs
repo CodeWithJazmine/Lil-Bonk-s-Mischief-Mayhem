@@ -1,7 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+    public static ScoreManager Instance;
+
+    private HashSet<string> collectedLetters = new HashSet<string>();
+    private string[] requiredLetters = { "B", "O", "N", "K" };
+
+
     public int currentScore = 0;
 
     private int bonkChainCount = 0;
@@ -11,8 +18,23 @@ public class ScoreManager : MonoBehaviour
     private bool isBonkChainActive = false;
 
     [SerializeField] private float bonkChainTimeout = 2.0f; // Max time between bonks
-
+    
     private ChaosMeter chaosMeter;
+
+
+
+    private void Awake()
+    {
+        // Ensure there is only one instance of the GameManager
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -71,10 +93,41 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Bonus points! Score: {currentScore}");
     }
 
-    // Debugging 
-    [ContextMenu("Add Debug Score")]
+
+
+    public void CollectLetter(string letter)
+    {
+        if (!collectedLetters.Contains(letter))
+        {
+            collectedLetters.Add(letter);
+            Debug.Log($"You collected: {letter}");
+
+            // Check if all letters are collected
+            if (collectedLetters.Count == requiredLetters.Length)
+            {
+                CompleteObjective();
+            }
+        }
+    }
+
+  
+
+
+  // Debugging 
+[ContextMenu("Add Debug Score")]
     public void DebugOnPlayerBonk()
     {
         HandleBonk(100); 
     }
+
+
+
+
+    private void CompleteObjective()
+    {
+        Debug.Log("BONK Completed! All letters collected!");
+        // Trigger a reward or progression system here
+    }
+
 }
+
