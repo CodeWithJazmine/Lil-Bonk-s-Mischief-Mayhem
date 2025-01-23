@@ -12,9 +12,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Random Guy 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 400166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.2838354
+      value: 575.8
       objectReference: {fileID: 0}
     - target: {fileID: 400166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.682148
+      value: 435.9
       objectReference: {fileID: 0}
     - target: {fileID: 400166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -56,6 +60,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: bbdc21cd543f5144198fe7d55eeecf51, type: 2}
+    - target: {fileID: 9500000, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -66,6 +74,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1806973787527200121}
+    - targetCorrespondingSourceObject: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3748978313437687228}
   m_SourcePrefab: {fileID: 100100000, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
 --- !u!1 &120538334217694610 stripped
 GameObject:
@@ -91,7 +102,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.61
-  m_BaseOffset: 0
+  m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &1806973787527200121
@@ -106,12 +117,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e8e0f3a519e1ed4aa6b685d94af6cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  fleeDistance: 5
+  bonk: 0
+  superBonk: 0
+  fleeDistance: 10
   wanderRadius: 10
   wanderSpeed: 2
-  fleeSpeed: 6
+  fleeSpeed: 4.5
   minWaitTime: 2
   maxWaitTime: 5
   fleeRadius: 3
-  crossFade: 0.1
+  bonkResistance: 0
+  bonkResistGain: 0.1
+  bonkResistMax: 0.75
+  bonkedTime: 2
+  getupTime: 1.5
+  currentBonkedTime: 0
+  currentGetupTime: 0
+  isAggressive: 0
+  chaseRadius: 5
+  chaseSpeed: 5
+  attackRadius: 3
+  attackTime: 3
+  pushForce: 1000
+  bulletPrefab: {fileID: 0}
+  shotPoint: {fileID: 0}
+  muzzleFlash: {fileID: 0}
+  crossFade: 0.02
+--- !u!136 &3748978313437687228
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120538334217694610}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1.69
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.74, z: 0}

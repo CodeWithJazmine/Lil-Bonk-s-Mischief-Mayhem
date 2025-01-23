@@ -14,7 +14,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private State currentState;
 
     // References & Control variables
-    [SerializeField] private Transform player;
+    private Transform player;
+    private Rigidbody playerRB;
     [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
     [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float wanderSpeed = 2f;
@@ -34,6 +35,10 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField, Tooltip("Needs to be very close for melee attackers.")] private float attackRadius = 3f;
     [SerializeField] private float attackTime = 3f;
+    [SerializeField] private float pushForce = 1000f; // Default value might be way too high.
+    [SerializeField] private GameObject bulletPrefab = null;
+    [SerializeField] private Transform shotPoint = null;
+    [SerializeField] private ParticleSystem muzzleFlash = null;
 
     NavMeshAgent agent;
     Animator animator;
@@ -69,6 +74,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
+        playerRB = player.GetComponent<Rigidbody>();
         cachedStoppingDistance = agent.stoppingDistance;
 
         // Initialize with the Wander state
@@ -396,5 +402,22 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             isIdle = false;
             OnEnemyBonked?.Invoke();
         }
+    }
+
+    private void OnPush()
+    {
+        // Animation event for melee enemy
+        // Pushes the player if they are within range
+        var distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if(distanceToPlayer <= attackRadius)
+        {
+            playerRB.AddForce(transform.forward * pushForce, ForceMode.Impulse);
+        }
+    }
+
+    private void OnShoot()
+    {
+        muzzleFlash?.Play();
+        var bullet = Instantiate(bulletPrefab, shotPoint.position, shotPoint.rotation);
     }
 }
