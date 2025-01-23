@@ -13,6 +13,10 @@ PrefabInstance:
       value: Random Girl 1
       objectReference: {fileID: 0}
     - target: {fileID: 100166, guid: 8f2819ec541c5ea458231eafa3b5f1ae, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 100166, guid: 8f2819ec541c5ea458231eafa3b5f1ae, type: 3}
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}

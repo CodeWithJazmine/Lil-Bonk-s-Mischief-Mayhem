@@ -13,6 +13,10 @@ PrefabInstance:
       value: Dude with a  Bat
       objectReference: {fileID: 0}
     - target: {fileID: 100166, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 100166, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}

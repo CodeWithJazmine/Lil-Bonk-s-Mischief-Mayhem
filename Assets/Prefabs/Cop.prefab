@@ -140,6 +140,10 @@ PrefabInstance:
       value: Cop
       objectReference: {fileID: 0}
     - target: {fileID: 100166, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 100166, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
