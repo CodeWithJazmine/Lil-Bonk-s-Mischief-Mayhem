@@ -1,26 +1,19 @@
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(Animator))]
+[RequireComponent (typeof(NavMeshAgent))]
 public class EnemyStateMachine : MonoBehaviour, IBonkable
 {
     public bool bonk, superBonk;
     public delegate void EnemyBonked();
     public event EnemyBonked OnEnemyBonked;
 
-    // States
-    private enum State
-    {
-        Wander,
-        Wait,
-        Flee,
-        Bonked,
-        Getup
-    }
-
     private State currentState;
 
-    // References
+    // References & Control variables
     [SerializeField] private Transform player;
     [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
     [SerializeField] private float wanderRadius = 10f;
@@ -34,8 +27,13 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float bonkResistMax = 0.75f;
     [SerializeField] private float bonkedTime = 2f;
     [SerializeField] private float getupTime = 1.5f;
-    [SerializeField] float currentBonkedTime = 0;
-    [SerializeField] float currentGetupTime;
+    [SerializeField] private float currentBonkedTime = 0;
+    [SerializeField] private float currentGetupTime;
+    [SerializeField] private bool isAggressive = false;
+    [SerializeField] private float chaseRadius = 5;
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField, Tooltip("Needs to be very close for melee attackers.")] private float attackRadius = 3f;
+    [SerializeField] private float attackTime = 3f;
 
     NavMeshAgent agent;
     Animator animator;
@@ -48,14 +46,19 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private static readonly int SuperBonkedHash = Animator.StringToHash("SuperBonked");
     private static readonly int GetupHash = Animator.StringToHash("Getup");
     private static readonly int BoundHash = Animator.StringToHash("Bound");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
 
-    [SerializeField] float crossFade = 0.1f;
-    bool isWalking = false;
-    bool isRunning = false;
-    bool isIdle = false;    
+    [SerializeField] private float crossFade = 0.1f;
+    private bool isWalking = false;
+    private bool isRunning = false;
+    private bool isIdle = false;
+    private bool isChasing = false;
+    private bool isAttacking = false;
 
     private Vector3 wanderTarget;
     private float waitTimer;
+    private float currentAttackTime;
+    private float cachedStoppingDistance;
 
     private void Awake()
     {
@@ -66,6 +69,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
+        cachedStoppingDistance = agent.stoppingDistance;
+
         // Initialize with the Wander state
         currentState = State.Wander;
         SetNewWanderTarget();
@@ -83,7 +88,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         {
             OnBonked(1f);
             superBonk = false;
-        }
+        }        
 
         switch (currentState)
         {
@@ -100,15 +105,32 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
                 break;
             case State.Getup:
                 break;
+            case State.Chase:
+                Chase();
+                break;
+            case State.Attack:
+                Attack();
+                break;
+
         }
 
         // Transition logic
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < fleeDistance 
+        if (distanceToPlayer < fleeDistance
             && currentState != State.Bonked
-            && currentState != State.Getup)
+            && currentState != State.Getup
+            && !isAggressive)
         {
             currentState = State.Flee;
+        }
+
+        else if (distanceToPlayer < chaseRadius
+            && currentState != State.Bonked
+            && currentState != State.Getup
+            && currentState != State.Attack
+            && isAggressive)
+        {
+            currentState = State.Chase;
         }
 
         else if (currentState == State.Flee && distanceToPlayer >= fleeDistance)
@@ -136,11 +158,25 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
             agent.isStopped = false;
         }
+
+        else if(currentState == State.Attack)
+        {
+            if(isAttacking)
+            {
+                currentAttackTime += Time.deltaTime;
+                if (currentAttackTime >= attackTime)
+                {
+                    isAttacking = false;
+                    currentState = State.Chase;
+                }
+            }
+        }
     }
 
     private void Wander()
     {
         agent.speed = wanderSpeed;
+        agent.stoppingDistance = cachedStoppingDistance;
 
         // Check if the enemy has reached the wander target
         if (HasReachedDestination())
@@ -155,6 +191,84 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         isWalking = true;
         isRunning = false;
         isIdle = false;
+    }
+
+    private void Chase()
+    {
+        if(!isChasing)
+        {
+            agent.speed = chaseSpeed;
+            agent.stoppingDistance = attackRadius;
+            agent.updateRotation = true;
+            agent.SetDestination(player.position);
+            isChasing = true;
+        }
+
+        else
+        {
+            var distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            // If the player is outside of attack range and we've reached our targeted position
+            if (HasReachedDestination()
+                && distanceToPlayer > attackRadius)
+            {
+                agent.SetDestination(player.position);
+                return;
+            }
+
+            else if (distanceToPlayer <= attackRadius)
+            {
+                agent.SetDestination(transform.position);
+                currentState = State.Attack;
+                return;
+            }
+
+            else if(!HasReachedDestination()
+                && !agent.pathPending)
+            {
+                agent.SetDestination(player.position);
+            }
+        }
+
+        if (!isRunning)
+            animator.CrossFade(RunHash, crossFade);
+
+        isWalking = false;
+        isRunning = true;
+        isIdle = false;
+    }
+
+    void Attack()
+    {
+        if(!isAttacking)
+        {
+            
+            Debug.Log("Attacking for real");
+            animator.CrossFade(AttackHash, crossFade);
+            currentAttackTime = 0;
+            isAttacking = true;
+        }
+
+        agent.updateRotation = false;
+        // Calculate the direction to the target
+        Vector3 direction = (player.position - transform.position).normalized;
+
+        // Zero out the Y component to restrict rotation to the Y-axis
+        direction.y = 0;
+
+        // Avoid processing if direction is zero (to prevent errors)
+        if (direction != Vector3.zero)
+        {
+            // Calculate the rotation to look at the target
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            // Apply the rotation to the object, modifying only the Y-axis
+            transform.rotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
+        }
+
+        isWalking = false;
+        isRunning = false;
+        isIdle = false;
+        isChasing = false;
     }
 
     bool HasReachedDestination()
@@ -203,6 +317,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             if (fleePosition != Vector3.zero)
             {
                 agent.speed = fleeSpeed;
+                agent.stoppingDistance = cachedStoppingDistance;
                 agent.SetDestination(fleePosition);
             }
         }
