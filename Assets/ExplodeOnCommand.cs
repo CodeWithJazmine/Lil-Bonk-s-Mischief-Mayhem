@@ -5,22 +5,31 @@ public class ExplodeOnCommand : MonoBehaviour
     public float radius;
     public float force = 1000f;
     public bool explode = false;
+    float delay = 1f;
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+            explode = true;
+
         if(explode)
         {
-            var hits = Physics.OverlapSphere(transform.position, radius);
-            foreach(var hit in hits)
+            delay -= Time.deltaTime;
+            if(delay < 0f)
             {
-                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                if(rb != null )
+                var hits = Physics.OverlapSphere(transform.position, radius);
+                foreach (var hit in hits)
                 {
-                    rb.AddExplosionForce(force, transform.position, radius);
+                    Rigidbody rb = hit.GetComponent<Rigidbody>();
+                    if (rb != null)
+                    {
+                        rb.AddExplosionForce(force, transform.position, radius);
+                    }
                 }
-            }
 
-            explode = false;
+                delay = 1f;
+                explode = false;
+            }
         }
     }
 
