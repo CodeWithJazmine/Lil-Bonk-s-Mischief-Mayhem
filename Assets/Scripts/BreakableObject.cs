@@ -4,7 +4,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
 {
     public Rigidbody[] rbs;
     [SerializeField] float hp = 1.0f;
-    [SerializeField] bool broken;
+    [SerializeField] bool broken = false;
     [SerializeField] Transform explosionPoint;
     [SerializeField] float explosionImpulse = 10f;
     [SerializeField] float explosionUpwardModifier = 1f;
@@ -29,7 +29,9 @@ public class BreakableObject : MonoBehaviour, IBonkable
     public void OnBonked(float value)
     {
         if (broken) return; // Already broken, don't respond to bonking
-        hp -= value;
+        Debug.Log("Bonked with value: " + value.ToString());
+        hp = hp - value;
+
         if(hp <= 0.0f)
         {
             foreach(var rb in rbs)

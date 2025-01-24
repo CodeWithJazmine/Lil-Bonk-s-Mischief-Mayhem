@@ -132,6 +132,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8616394106135775529, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 597.12585
@@ -172,9 +176,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4009618361762921197, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
       propertyPath: m_Name
       value: Car_B1
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -854979549580309855, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -772863347011231466, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3808858953580596656, guid: f92ee84dce639884882c4ffddd3b28c6, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -623,6 +647,10 @@ PrefabInstance:
     - target: {fileID: 297682575580473376, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
       propertyPath: m_TagString
       value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1729922992798354231, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
+      propertyPath: bonkableLayer.m_Bits
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 6086539215425075651, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
       propertyPath: m_LocalPosition.x

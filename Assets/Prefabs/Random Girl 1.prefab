@@ -67,7 +67,7 @@ PrefabInstance:
     - target: {fileID: 9500000, guid: 8f2819ec541c5ea458231eafa3b5f1ae, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: bbdc21cd543f5144198fe7d55eeecf51, type: 2}
+      objectReference: {fileID: 9100000, guid: b329321687eb0eb4cbaee960e62fabd4, type: 2}
     - target: {fileID: 9500000, guid: 8f2819ec541c5ea458231eafa3b5f1ae, type: 3}
       propertyPath: m_AnimatePhysics
       value: 1
@@ -114,7 +114,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: -0.1
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &1806973787527200121
