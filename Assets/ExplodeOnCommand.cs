@@ -6,6 +6,7 @@ public class ExplodeOnCommand : MonoBehaviour
     public float force = 1000f;
     public bool explode = false;
     float delay = 1f;
+    public GameObject effect = null;
 
     void Update()
     {
@@ -27,6 +28,7 @@ public class ExplodeOnCommand : MonoBehaviour
                     }
                 }
 
+                if (effect != null) effect.SetActive(true);
                 delay = 1f;
                 explode = false;
             }
