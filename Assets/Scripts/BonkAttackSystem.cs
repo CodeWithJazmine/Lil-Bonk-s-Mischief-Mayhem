@@ -30,7 +30,7 @@ public class BonkAttackSystem : MonoBehaviour
     private bool isCharging = false;
     private bool isAttacking = false;
     private bool canStartNewAttack = true;
-    private bool isDetecting = false;
+    //private bool isDetecting = false;
 
     // animation Hash IDs for performance
     private readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
@@ -177,8 +177,10 @@ public class BonkAttackSystem : MonoBehaviour
             Debug.LogError("Detection point transform is not assigned!");
             return;
         }
-        isDetecting = true;
+        //isDetecting = true;
         currentGizmoColor = activeGizmoColor;
+
+        float impactValue = isCharging ? CalculateChargeValue() : 0f; 
 
         // detect objects using the transform's position and rotation
         Collider[] hitColliders = Physics.OverlapBox(
@@ -193,6 +195,7 @@ public class BonkAttackSystem : MonoBehaviour
         {
             if (hitCollider.TryGetComponent<IBonkable>(out var bonkable))
             {
+                bonkable.OnBonked(impactValue);
                 Debug.Log($"Detected bonkable object: {hitCollider.name}");
             }
         }
@@ -203,7 +206,7 @@ public class BonkAttackSystem : MonoBehaviour
 
     private void ResetGizmoColor()
     {
-        isDetecting = false;
+        //isDetecting = false;
         currentGizmoColor = normalGizmoColor;
     }
 
