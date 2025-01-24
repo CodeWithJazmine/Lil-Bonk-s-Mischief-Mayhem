@@ -17,8 +17,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private Transform player;
     private Rigidbody playerRB;
     [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
+    [SerializeField] private bool useWaypoints = false;
     [SerializeField] private float wanderRadius = 10f;
-    [SerializeField] private float wanderSpeed = 2f;
+    [SerializeField] private float normalSpeed = 2f;
     [SerializeField] private float fleeSpeed = 4f;
     [SerializeField] private float minWaitTime = 2f; // Minimum wait time
     [SerializeField] private float maxWaitTime = 5f; // Maximum wait time
@@ -39,6 +40,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private GameObject bulletPrefab = null;
     [SerializeField] private Transform shotPoint = null;
     [SerializeField] private ParticleSystem muzzleFlash = null;
+    [SerializeField] private Transform[] waypoints = null;
+    [SerializeField] private int currentWaypoint = 0;
 
     NavMeshAgent agent;
     Animator animator;
@@ -61,7 +64,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private bool isAttacking = false;
 
     private Vector3 wanderTarget;
-    private float waitTimer;
+    private float currentWaitTime;
     private float currentAttackTime;
     private float cachedStoppingDistance;
 
@@ -98,6 +101,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
         switch (currentState)
         {
+            case State.Waypoint:
+                Waypoint();
+                break;
             case State.Wander:
                 Wander();
                 break;
@@ -139,10 +145,20 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             currentState = State.Chase;
         }
 
-        else if (currentState == State.Flee && distanceToPlayer >= fleeDistance)
+        else if (!useWaypoints
+            &&currentState == State.Flee 
+            && distanceToPlayer >= fleeDistance)
         {
             currentState = State.Wander;
             SetNewWanderTarget();
+        }
+
+        else if (useWaypoints
+            &&currentState == State.Flee 
+            && distanceToPlayer >= fleeDistance)
+        {
+            currentState = State.Waypoint;
+            SetNextWaypointTarget();
         }
 
         else if(currentState == State.Bonked)
@@ -181,17 +197,39 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     private void Wander()
     {
-        agent.speed = wanderSpeed;
+        agent.speed = normalSpeed;
         agent.stoppingDistance = cachedStoppingDistance;
 
         // Check if the enemy has reached the wander target
         if (HasReachedDestination())
         {
             currentState = State.Wait;
-            waitTimer = Random.Range(minWaitTime, maxWaitTime); // Set a random wait time
+            currentWaitTime = Random.Range(minWaitTime, maxWaitTime); // Set a random wait time
         }
 
         if(!isWalking)
+            animator.CrossFade(WalkHash, crossFade);
+
+        isWalking = true;
+        isRunning = false;
+        isIdle = false;
+    }
+
+    private void Waypoint()
+    {
+        agent.speed = normalSpeed;
+        agent.stoppingDistance = cachedStoppingDistance;
+
+        // Check if the enemy has reached the wander target
+        if (HasReachedDestination())
+        {
+            currentWaypoint++;
+            if(currentWaypoint >= waypoints.Length) currentWaypoint = 0;
+            currentState = State.Wait;
+            currentWaitTime = Random.Range(minWaitTime, maxWaitTime); // Set a random wait time
+        }
+
+        if (!isWalking)
             animator.CrossFade(WalkHash, crossFade);
 
         isWalking = true;
@@ -287,13 +325,22 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private void Wait()
     {
         // Countdown the wait timer
-        waitTimer -= Time.deltaTime;
+        currentWaitTime -= Time.deltaTime;
 
         // Transition back to Wander when the timer runs out
-        if (waitTimer <= 0)
+        if (currentWaitTime <= 0)
         {
-            currentState = State.Wander;
-            SetNewWanderTarget();
+            if(useWaypoints)
+            {
+                currentState = State.Waypoint;
+                SetNextWaypointTarget();
+            }
+
+            else
+            {
+                currentState = State.Wander;
+                SetNewWanderTarget();
+            }
         }
 
         if (!isIdle)
@@ -313,6 +360,11 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
         wanderTarget = hit.position;
         agent.SetDestination(wanderTarget);
+    }
+
+    private void SetNextWaypointTarget()
+    {
+        agent.SetDestination(waypoints[currentWaypoint].position);
     }
 
     private void Flee()

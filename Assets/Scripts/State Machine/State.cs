@@ -1,5 +1,6 @@
 ﻿public enum State
 {
+    Waypoint,
     Wander,
     Wait,
     Flee,
