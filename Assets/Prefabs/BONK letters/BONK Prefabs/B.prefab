@@ -130,8 +130,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotSpeedX: 0
-  rotSpeedY: 0
-  rotSpeedZ: 32.4
-  bounceHeight: 0.01
-  bounceSpeed: 0.1
+  rotSpeedY: 90
+  rotSpeedZ: 0
+  bounceHeight: 0.111
+  bounceSpeed: 1.74
   startPos: {x: 0, y: 0, z: 0}
