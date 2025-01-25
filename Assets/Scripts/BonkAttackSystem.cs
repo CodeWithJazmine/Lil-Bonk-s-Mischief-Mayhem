@@ -7,13 +7,22 @@ public class BonkAttackSystem : MonoBehaviour
     public float attackCooldown = 0.5f;
     public bool allowMovementDuringAttack = false;
 
+    [Header("Detection Settings")]
+    public Vector3 attackBoxSize = new Vector3(1f, 1f, 1f);
+    public Transform detectionPoint;
+    public Color normalGizmoColor = Color.blue;
+    public Color activeGizmoColor = Color.red;
+    private Color currentGizmoColor;
+
     private float holdTime = 0f;
     private float holdThreshold = 0.15f;
+    private const float MIN_CHARGE_VALUE = 0.1f; 
 
     [Header("References")]
     public PlayerMovement playerMovement;
     public MalletRotation malletRotation;
     public Transform parentMallet;
+    public LayerMask bonkableLayer;
 
     private Animator animator;
     private float currentChargeTime = 0f;
@@ -21,7 +30,7 @@ public class BonkAttackSystem : MonoBehaviour
     private bool isCharging = false;
     private bool isAttacking = false;
     private bool canStartNewAttack = true;
-    private Quaternion originalRotation;
+    //private bool isDetecting = false;
 
     // animation Hash IDs for performance
     private readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
@@ -32,6 +41,7 @@ public class BonkAttackSystem : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        currentGizmoColor = normalGizmoColor;
 
         if (parentMallet == null)
             parentMallet = transform.parent;
@@ -62,7 +72,11 @@ public class BonkAttackSystem : MonoBehaviour
             holdTime = 0f;
         }
 
+        BonkInputLogic();
+    }
 
+    private void BonkInputLogic()
+    {
         // start attack
         if (Input.GetMouseButtonDown(0) && canStartNewAttack && !isAttacking)
         {
@@ -71,8 +85,7 @@ public class BonkAttackSystem : MonoBehaviour
         // start charge if hold time is greater than threshold
         else if (Input.GetMouseButton(0) && isAttacking && !isCharging && holdTime > holdThreshold)
         {
-            isCharging = true;
-            animator.SetBool(IsChargingHash, true);
+            StartCharge();
         }
         // handle charge
         else if (Input.GetMouseButton(0) && isCharging)
@@ -83,7 +96,7 @@ public class BonkAttackSystem : MonoBehaviour
         else if (Input.GetMouseButtonUp(0) && isCharging)
         {
             ReleaseCharge();
-            holdTime = 0f; 
+            holdTime = 0f;
         }
     }
 
@@ -103,6 +116,12 @@ public class BonkAttackSystem : MonoBehaviour
         HandleMovementRestrictions();
     }
 
+    private void StartCharge()
+    {
+        isCharging = true;
+        animator.SetBool(IsChargingHash, true);
+    }
+
     private void HandleCharge()
     {
         currentChargeTime += Time.deltaTime;
@@ -120,6 +139,15 @@ public class BonkAttackSystem : MonoBehaviour
         isCharging = false;
         animator.SetBool(IsChargingHash, false);
         animator.SetTrigger(TriggerSlamHash);
+
+        float finalCharge = CalculateChargeValue();
+        Debug.Log($"Released charge with value: {finalCharge:F2}");
+    }
+
+    private float CalculateChargeValue()
+    {
+        float normalizedValue = Mathf.Clamp01(currentChargeTime / maxChargeTime);
+        return Mathf.Lerp(MIN_CHARGE_VALUE, 1f, normalizedValue);
     }
 
     private void HandleMovementRestrictions()
@@ -141,19 +169,74 @@ public class BonkAttackSystem : MonoBehaviour
         }
     }
 
-    // called via Animation Event at the end of slam animation
+    private void DetectBonkableObjects()
+    {
+        // safety check for detection point reference
+        if (detectionPoint == null)
+        {
+            Debug.LogError("Detection point transform is not assigned!");
+            return;
+        }
+        //isDetecting = true;
+        currentGizmoColor = activeGizmoColor;
+
+        float impactValue = isCharging ? CalculateChargeValue() : 0f; 
+
+        // detect objects using the transform's position and rotation
+        Collider[] hitColliders = Physics.OverlapBox(
+            detectionPoint.position,
+            attackBoxSize / 2f,
+            detectionPoint.rotation,
+            bonkableLayer
+        );
+
+        // log detected objects for debugging
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.TryGetComponent<IBonkable>(out var bonkable))
+            {
+                bonkable.OnBonked(impactValue);
+                Debug.Log($"Detected bonkable object: {hitCollider.name}");
+            }
+        }
+
+        // reset gizmo color after a short delay
+        Invoke(nameof(ResetGizmoColor), 0.1f);
+    }
+
+    private void ResetGizmoColor()
+    {
+        //isDetecting = false;
+        currentGizmoColor = normalGizmoColor;
+    }
+
+    public void OnSlam()
+    {
+        DetectBonkableObjects();
+    }
+
+    // called via Animation Event at the end of attack sequence
     public void OnAttackComplete()
     {
         isAttacking = false;
         animator.SetBool(IsAttackingHash, false);
+        animator.ResetTrigger(TriggerSlamHash);  
+        animator.ResetTrigger(TriggerWindupHash);
         cooldownTimer = attackCooldown;
-    }
 
-    // optional: add visual feedback or effects during attacks
-    public void OnAnimationComplete()
-    {
         // re-enable movement
         playerMovement.enabled = true;
         malletRotation.enabled = true;
+    }
+
+    // visualize the attack detection box
+    private void OnDrawGizmos()
+    {
+        // allow gizmo to show even in edit mode for easier setup
+        if (detectionPoint == null) return;
+
+        Gizmos.color = Application.isPlaying ? currentGizmoColor : normalGizmoColor;
+        Gizmos.matrix = Matrix4x4.TRS(detectionPoint.position, detectionPoint.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, attackBoxSize);
     }
 }

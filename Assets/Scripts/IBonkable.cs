@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IBonkable
 {
-    void OnBonked(); 
+    void OnBonked(float value); 
 }
