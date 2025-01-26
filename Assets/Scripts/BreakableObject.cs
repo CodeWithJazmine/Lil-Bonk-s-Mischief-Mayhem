@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BreakableObject : MonoBehaviour, IBonkable
 {
-    public Rigidbody[] rbs;
+    DinoFracture.FractureGeometry fracture;
     [SerializeField] float hp = 1.0f;
     [SerializeField] bool broken = false;
     [SerializeField] Transform explosionPoint;
@@ -11,10 +11,16 @@ public class BreakableObject : MonoBehaviour, IBonkable
     [SerializeField] float explosionRadius = 3f;
     [SerializeField] bool testBreak = false;
     [SerializeField] float destroyTime = 10f;
+    [SerializeField] LayerMask mask;
 
     private void Awake()
     {
-        rbs = GetComponentsInChildren<Rigidbody>();
+        fracture = GetComponent<DinoFracture.FractureGeometry>();
+    }
+
+    void Start()
+    {
+        if (explosionPoint == null) explosionPoint = transform;
     }
 
     void Update()
@@ -34,14 +40,17 @@ public class BreakableObject : MonoBehaviour, IBonkable
 
         if(hp <= 0.0f)
         {
-            foreach(var rb in rbs)
+            if(fracture != null)
+                fracture.Fracture();
+
+            Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, mask);
+
+            foreach(var col in colliders)
             {
-                rb.transform.SetParent(null);
-                rb.isKinematic = false;
-                rb.useGravity = true;
-                rb.constraints = RigidbodyConstraints.None;
-                rb.AddExplosionForce(explosionImpulse, explosionPoint.position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
-                Destroy(rb.gameObject, destroyTime);
+                Rigidbody rb;
+                col.TryGetComponent<Rigidbody>(out rb);
+                if(rb)
+                    rb.AddExplosionForce(explosionImpulse, explosionPoint.position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
             }
 
             broken = true;
