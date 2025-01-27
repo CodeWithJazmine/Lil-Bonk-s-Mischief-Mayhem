@@ -21,12 +21,12 @@ public class Bullet : MonoBehaviour
     {
         if(collision.collider.CompareTag("Player"))
         {
-            collision.collider.GetComponent<Rigidbody>().AddForce(transform.forward * bulletForce, ForceMode.Impulse);
+            collision.collider.GetComponent<Rigidbody>().AddForce(transform.forward * bulletForce, ForceMode.VelocityChange);
         }
 
         else if(collision.collider.CompareTag("Enemy"))
         {
-            collision.collider.GetComponent<EnemyStateMachine>().OnBonked(1f);
+            collision.collider.GetComponent<EnemyStateMachine>().OnBonked(1f, transform.position);
         }
 
         Instantiate(hitEffect, transform.position, Quaternion.identity);

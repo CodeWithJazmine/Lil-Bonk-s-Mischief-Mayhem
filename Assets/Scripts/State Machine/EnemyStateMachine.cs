@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent (typeof(NavMeshAgent))]
+[RequireComponent(typeof(Rigidbody))]
 public class EnemyStateMachine : MonoBehaviour, IBonkable
 {
     public bool bonk, superBonk;
@@ -16,6 +17,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     // References & Control variables
     private Transform player;
     private Rigidbody playerRB;
+    private Rigidbody rb;
     [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
     [SerializeField] private bool useWaypoints = false;
     [SerializeField] private float wanderRadius = 10f;
@@ -27,6 +29,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float bonkResistance = 0;
     [SerializeField] private float bonkResistGain = 0.1f;
     [SerializeField] private float bonkResistMax = 0.75f;
+    [SerializeField] private float bonkedBaseForce = 10f; // Base amount of force for velocity change when player bonks enemy
     [SerializeField] private float bonkedTime = 2f;
     [SerializeField] private float getupTime = 1.5f;
     [SerializeField] private float currentBonkedTime = 0;
@@ -72,6 +75,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Start()
@@ -87,18 +91,6 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     void Update()
     {
-        if(bonk)
-        {
-            OnBonked(Random.Range(0f, 1f));
-            bonk = false;    
-        }
-
-        if (superBonk)
-        {
-            OnBonked(1f);
-            superBonk = false;
-        }        
-
         switch (currentState)
         {
             case State.Waypoint:
@@ -112,8 +104,6 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
                 break;
             case State.Flee:
                 Flee();
-                break;
-            case State.Bonked:
                 break;
             case State.Getup:
                 break;
@@ -166,9 +156,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             currentBonkedTime += Time.deltaTime;
             if(currentBonkedTime >= bonkedTime)
             {
-                currentState = State.Getup;
-                animator.CrossFade(GetupHash, crossFade);
                 currentGetupTime = 0;
+                animator.CrossFade(GetupHash, crossFade);
+                currentState = State.Getup;
             }
         }
 
@@ -199,6 +189,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         agent.speed = normalSpeed;
         agent.stoppingDistance = cachedStoppingDistance;
+        agent.updateRotation = true;
+        agent.updatePosition = true;
 
         // Check if the enemy has reached the wander target
         if (HasReachedDestination())
@@ -219,6 +211,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         agent.speed = normalSpeed;
         agent.stoppingDistance = cachedStoppingDistance;
+        agent.updateRotation = true;
+        agent.updatePosition = true;
 
         // Check if the enemy has reached the wander target
         if (HasReachedDestination())
@@ -284,30 +278,14 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     void Attack()
     {
         if(!isAttacking)
-        {
-            
-            Debug.Log("Attacking for real");
+        {            
             animator.CrossFade(AttackHash, crossFade);
             currentAttackTime = 0;
             isAttacking = true;
         }
 
         agent.updateRotation = false;
-        // Calculate the direction to the target
-        Vector3 direction = (player.position - transform.position).normalized;
-
-        // Zero out the Y component to restrict rotation to the Y-axis
-        direction.y = 0;
-
-        // Avoid processing if direction is zero (to prevent errors)
-        if (direction != Vector3.zero)
-        {
-            // Calculate the rotation to look at the target
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-            // Apply the rotation to the object, modifying only the Y-axis
-            transform.rotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
-        }
+        TurnTowardsPosition(player.position);
 
         isWalking = false;
         isRunning = false;
@@ -374,6 +352,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             Vector3 fleePosition = GetFleePosition();
             if (fleePosition != Vector3.zero)
             {
+                agent.updatePosition = true;
+                agent.updateRotation = true;
                 agent.speed = fleeSpeed;
                 agent.stoppingDistance = cachedStoppingDistance;
                 agent.SetDestination(fleePosition);
@@ -405,13 +385,15 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         return Vector3.zero; // Return zero vector if no valid position is found
     }
 
-    public void OnBonked(float value)
+    public void OnBonked(float value, Vector3 position)
     {
         // If already bonked, or getting up play bound animation
         if(currentState == State.Bonked || currentState == State.Getup)
         {
             agent.isStopped = true;
             agent.Warp(transform.position);
+            var forceDir = (position - transform.position).normalized;
+            rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             currentBonkedTime = 0;
             currentGetupTime = 0;
             animator.Play(BoundHash, -1, 0);
@@ -419,18 +401,22 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             isWalking = false;
             isRunning = false;
             isIdle = false;
-            return; // To prevent other ifs from firing
         }
 
         // If value = 1 enemy is super bonked
-        if(value >= 1f)
+        else if(value >= 1f)
         {
-            Debug.Log("SUPER BONKED");
             agent.isStopped = true;
             agent.Warp(transform.position);
+            agent.updatePosition = false;
+            agent.updateRotation = false;
             currentState = State.Bonked;
             animator.CrossFade(SuperBonkedHash, crossFade);
             currentBonkedTime = 0;
+            // Turn towards position
+            TurnTowardsPosition(position);
+            var forceDir = (position - transform.position).normalized;
+            rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             isWalking = false;
             isRunning = false;
             isIdle = false;
@@ -440,13 +426,19 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
         // If value >= bonkResistance, enemy is bonked.
         // Increase bonk resistance
-        if(value >= bonkResistance)
+        else if(value >= bonkResistance)
         {
             agent.isStopped = true;
+            agent.updatePosition = false;
+            agent.updateRotation = false;
             agent.Warp(transform.position);
             currentState = State.Bonked;
             animator.CrossFade(BonkedHash, crossFade);
             currentBonkedTime = 0;
+            // Turn towards position
+            TurnTowardsPosition(position);
+            var forceDir = (position - transform.position).normalized;
+            rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             bonkResistance += bonkResistGain;
             if (bonkResistance >= bonkResistMax) bonkResistance = bonkResistMax;
             isWalking = false;
@@ -463,7 +455,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         var distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if(distanceToPlayer <= attackRadius)
         {
-            playerRB.AddForce(transform.forward * pushForce, ForceMode.Impulse);
+            playerRB.AddForce(transform.forward * pushForce, ForceMode.VelocityChange);
         }
     }
 
@@ -471,5 +463,25 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     {
         muzzleFlash?.Play();
         var bullet = Instantiate(bulletPrefab, shotPoint.position, shotPoint.rotation);
+        bullet.GetComponent<Bullet>().bulletForce = pushForce;
+    }
+
+    private void TurnTowardsPosition(Vector3 position)
+    {
+        // Calculate the direction to the target
+        Vector3 direction = (position - transform.position).normalized;
+
+        // Zero out the Y component to restrict rotation to the Y-axis
+        direction.y = 0;
+
+        // Avoid processing if direction is zero (to prevent errors)
+        if (direction != Vector3.zero)
+        {
+            // Calculate the rotation to look at the target
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            // Apply the rotation to the object, modifying only the Y-axis
+            transform.rotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
+        }
     }
 }

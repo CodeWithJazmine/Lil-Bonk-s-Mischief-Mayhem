@@ -5,7 +5,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
     public Rigidbody[] rbs;
     [SerializeField] float hp = 1.0f;
     [SerializeField] bool broken = false;
-    [SerializeField] Transform explosionPoint;
+    [SerializeField] Transform debugExplosionPoint;
     [SerializeField] float explosionImpulse = 10f;
     [SerializeField] float explosionUpwardModifier = 1f;
     [SerializeField] float explosionRadius = 3f;
@@ -21,12 +21,12 @@ public class BreakableObject : MonoBehaviour, IBonkable
     {
         if(testBreak)
         {
-            OnBonked(hp);
+            OnBonked(hp, debugExplosionPoint.position);
             testBreak = false;
         }
     }
 
-    public void OnBonked(float value)
+    public void OnBonked(float value, Vector3 position)
     {
         if (broken) return; // Already broken, don't respond to bonking
         Debug.Log("Bonked with value: " + value.ToString());
@@ -40,7 +40,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.constraints = RigidbodyConstraints.None;
-                rb.AddExplosionForce(explosionImpulse, explosionPoint.position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
+                rb.AddExplosionForce(explosionImpulse, position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
                 Destroy(rb.gameObject, destroyTime);
             }
 
