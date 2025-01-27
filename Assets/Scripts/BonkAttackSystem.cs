@@ -195,7 +195,7 @@ public class BonkAttackSystem : MonoBehaviour
         {
             if (hitCollider.TryGetComponent<IBonkable>(out var bonkable))
             {
-                bonkable.OnBonked(impactValue);
+                bonkable.OnBonked(impactValue, transform.position);
                 Debug.Log($"Detected bonkable object: {hitCollider.name}");
             }
         }

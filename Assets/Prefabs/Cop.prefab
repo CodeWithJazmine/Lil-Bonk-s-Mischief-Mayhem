@@ -211,6 +211,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100166, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8737707197816417833}
+    - targetCorrespondingSourceObject: {fileID: 100166, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6531656435819187395}
   m_SourcePrefab: {fileID: 100100000, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}
 --- !u!1 &2515802983401393599 stripped
 GameObject:
@@ -227,7 +230,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -254,8 +257,9 @@ MonoBehaviour:
   bonk: 0
   superBonk: 0
   fleeDistance: 5
+  useWaypoints: 0
   wanderRadius: 10
-  wanderSpeed: 2
+  normalSpeed: 2
   fleeSpeed: 4
   minWaitTime: 2
   maxWaitTime: 5
@@ -263,6 +267,7 @@ MonoBehaviour:
   bonkResistance: 0
   bonkResistGain: 0.1
   bonkResistMax: 0.75
+  bonkedBaseForce: 10
   bonkedTime: 2
   getupTime: 1.5
   currentBonkedTime: 0
@@ -271,11 +276,13 @@ MonoBehaviour:
   chaseRadius: 7
   chaseSpeed: 5
   attackRadius: 7
-  attackTime: 3
-  pushForce: 1000
+  attackTime: 2
+  pushForce: 15
   bulletPrefab: {fileID: 2491399811027288467, guid: f571b3cf584cc6a4f9d05c53ff355761, type: 3}
   shotPoint: {fileID: 3981165160595311654}
   muzzleFlash: {fileID: 1498171539904574396}
+  waypoints: []
+  currentWaypoint: 0
   crossFade: 0.1
 --- !u!136 &8737707197816417833
 CapsuleCollider:
@@ -300,6 +307,33 @@ CapsuleCollider:
   m_Height: 1.69
   m_Direction: 1
   m_Center: {x: 0, y: 0.74, z: 0}
+--- !u!54 &6531656435819187395
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2515802983401393599}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &2515802983401623993 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400192, guid: d5480912f7a1d7a4294a1ce13a774f7d, type: 3}

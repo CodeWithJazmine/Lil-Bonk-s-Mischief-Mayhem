@@ -81,6 +81,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100166, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3126544617523841440}
+    - targetCorrespondingSourceObject: {fileID: 100166, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6223564235343063540}
   m_SourcePrefab: {fileID: 100100000, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
 --- !u!1 &3531242490094768620 stripped
 GameObject:
@@ -97,7 +100,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -124,8 +127,9 @@ MonoBehaviour:
   bonk: 0
   superBonk: 0
   fleeDistance: 5
+  useWaypoints: 0
   wanderRadius: 10
-  wanderSpeed: 2
+  normalSpeed: 2
   fleeSpeed: 4
   minWaitTime: 2
   maxWaitTime: 5
@@ -133,6 +137,7 @@ MonoBehaviour:
   bonkResistance: 0
   bonkResistGain: 0.1
   bonkResistMax: 0.75
+  bonkedBaseForce: 10
   bonkedTime: 2
   getupTime: 1.5
   currentBonkedTime: 0
@@ -142,10 +147,12 @@ MonoBehaviour:
   chaseSpeed: 4.5
   attackRadius: 1.25
   attackTime: 3
-  pushForce: 1000
+  pushForce: 10
   bulletPrefab: {fileID: 0}
   shotPoint: {fileID: 0}
   muzzleFlash: {fileID: 0}
+  waypoints: []
+  currentWaypoint: 0
   crossFade: 0.1
 --- !u!136 &3126544617523841440
 CapsuleCollider:
@@ -170,3 +177,30 @@ CapsuleCollider:
   m_Height: 1.69
   m_Direction: 1
   m_Center: {x: 0, y: 0.74, z: 0}
+--- !u!54 &6223564235343063540
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3531242490094768620}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
