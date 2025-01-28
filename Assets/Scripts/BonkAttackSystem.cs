@@ -51,7 +51,7 @@ public class BonkAttackSystem : MonoBehaviour
     [SerializeField] private Color activeGizmoColor = Color.red;
 
     // private variables
-    [SerializeField] private float holdThreshold = 0.15f;
+    [SerializeField] private float holdThreshold = 0.2f;
     private const float MIN_CHARGE_VALUE = 0.1f;
     private Transform parentMallet;
     private Camera mainCamera;
@@ -61,9 +61,12 @@ public class BonkAttackSystem : MonoBehaviour
     private float currentChargeTime = 0f;
     private float cooldownTimer = 0f;
     private float holdTime = 0f;
+    private float finalCharge = 0f;
     private bool isCharging = false;
     private bool isAttacking = false;
     private bool canStartNewAttack = true;
+    private bool wasAutoReleased = false;
+    private bool isChargedAttack = false;
 
     // animation hash ids for performance
     private readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
@@ -109,7 +112,7 @@ public class BonkAttackSystem : MonoBehaviour
             HandleCharge();
         }
         // release charge
-        else if (Input.GetMouseButtonUp(0) && isCharging)
+        else if (Input.GetMouseButtonUp(0) && isCharging && !wasAutoReleased)
         {
             ReleaseCharge();
             holdTime = 0f;
@@ -143,7 +146,7 @@ public class BonkAttackSystem : MonoBehaviour
     {
         isAttacking = true;
         canStartNewAttack = false;
-        currentChargeTime = 0f;
+        wasAutoReleased = false;
 
         // instantly reset mallet to upright position
         ResetMalletRotation();
@@ -167,6 +170,7 @@ public class BonkAttackSystem : MonoBehaviour
     private void StartCharge()
     {
         isCharging = true;
+        isChargedAttack = true;
         animator.SetBool(IsChargingHash, true);
         animator.SetFloat("AttackSpeed", chargeAttackSpeedMultiplier);
 
@@ -174,24 +178,32 @@ public class BonkAttackSystem : MonoBehaviour
 
     private void HandleCharge()
     {
-        currentChargeTime += Time.deltaTime;
-        animator.SetBool(IsChargingHash, true);
-
-        // auto release if max charge time reached
-        if (currentChargeTime >= maxChargeTime)
+        if (currentChargeTime < maxChargeTime)
         {
-            ReleaseCharge();
+            currentChargeTime += Time.deltaTime;
+            animator.SetBool(IsChargingHash, true);
+
+            // if we just hit max charge, release
+            if (currentChargeTime >= maxChargeTime)
+            {
+                wasAutoReleased = true;
+                ReleaseCharge();
+            }
         }
     }
 
     private void ReleaseCharge()
     {
-        isCharging = false;
-        animator.SetBool(IsChargingHash, false);
-        animator.SetTrigger(TriggerSlamHash);
+        if (isCharging)
+        {
+            isCharging = false;
+            animator.SetBool(IsChargingHash, false);
+            animator.SetTrigger(TriggerSlamHash);
 
-        float finalCharge = CalculateChargeValue();
-        Debug.Log($"Released charge with value: {finalCharge:F2}");
+            finalCharge = CalculateChargeValue();
+
+            currentChargeTime = 0f;
+        }
     }
 
     private void HandleCooldown()
@@ -264,10 +276,9 @@ public class BonkAttackSystem : MonoBehaviour
             Debug.LogError("Detection point transform is not assigned!");
             return;
         }
-        //isDetecting = true;
         currentGizmoColor = activeGizmoColor;
 
-        float impactValue = isCharging ? CalculateChargeValue() : 0f; 
+        float impactValue = isChargedAttack ? finalCharge : 0f; 
 
         // detect objects using the transform's position and rotation
         Collider[] hitColliders = Physics.OverlapBox(
@@ -287,13 +298,14 @@ public class BonkAttackSystem : MonoBehaviour
             }
         }
 
+        Debug.Log($"Impact Value sent to IBonkable: {impactValue:F2}");
+
         // reset gizmo color after a short delay
         Invoke(nameof(ResetGizmoColor), 0.1f);
     }
 
     private void ResetGizmoColor()
     {
-        //isDetecting = false;
         currentGizmoColor = normalGizmoColor;
     }
 
@@ -318,6 +330,7 @@ public class BonkAttackSystem : MonoBehaviour
         animator.ResetTrigger(TriggerWindupHash);
         animator.SetFloat("AttackSpeed", 1f);
         cooldownTimer = attackCooldown;
+        isChargedAttack = false;
 
         // re-enable movement
         playerMovement.enabled = true;
