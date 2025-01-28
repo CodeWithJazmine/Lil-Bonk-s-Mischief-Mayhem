@@ -1,8 +1,20 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [Header("Game Variables")]
+    private bool gameStarted = false;
+    private bool gameIsOver = false;
+    [SerializeField] private float gameTimer = 120.0f; // Game timer in seconds
+
+    [Header("UI")]
+    public GameObject activeMenu;
+    public GameObject activeCanvas, previousCanvas;
+    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas;
+    private bool isPaused;
 
     [Header("Score System")]
     public int currentScore = 0;
@@ -17,11 +29,44 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-        //DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
+        InitializeGame();
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Reinitialize the game every time the scene is loaded
+        InitializeGame();
+    }
+
+
+    private void Update()
+    {
+        UpdateGameTimer();
+        CheckForMenuInput();
+    }
+    private void InitializeGame()
+    {
+        gameIsOver = false;
+        startMenuCanvas.SetActive(true);
+        pauseMenuCanvas.SetActive(false);
+        optionsMenuCanvas.SetActive(false);
+        gameOverCanvas.SetActive(false);
+
+
         if (scoreManager == null)
         {
             Debug.Log("ScoreManager not assigned.");
@@ -36,16 +81,27 @@ public class GameManager : MonoBehaviour
             chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
             chaosMeter.OnChaosReset.AddListener(OnChaosMeterReset);
         }
-
-        InitializeGame();
-    }
-
-    private void InitializeGame()
-    {
         currentScore = 0;
     }
 
-#region Score System
+    private void UpdateGameTimer()
+    {
+        if (gameStarted && !gameIsOver)
+        {
+            if (gameTimer > 0)
+            {
+                gameTimer -= Time.deltaTime;
+                // Update Timer UI
+            }
+            else
+            {
+                gameTimer = 0;
+                GameOver();
+            }
+        }
+    }
+
+    #region Score System
 
     // HandleBonk: call this when the player successfully bonks a BONKABLE object.
     public void HandleBonk(int points)
@@ -85,5 +141,107 @@ public class GameManager : MonoBehaviour
         }
     }
 
- #endregion // End of Score System
+    #endregion // End of Score System
+
+    #region Menu System
+
+    private void CheckForMenuInput()
+    {
+        // Start the game when the player presses Space
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            startMenuCanvas.SetActive(false);
+            gameStarted = true;
+        }
+
+        // Restart game on game over
+        if (gameIsOver && Input.GetKeyDown(KeyCode.Space))
+        {
+            RestartGame();
+        }
+
+        // Open pause menu
+        if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && gameStarted && activeMenu == null && activeCanvas == null)
+        {
+            pauseMenuCanvas.SetActive(true);
+            activeCanvas = pauseMenuCanvas;
+            previousCanvas = activeCanvas;
+            Pause();
+        }
+        // Close pause menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == pauseMenuCanvas)
+        {
+            pauseMenuCanvas.SetActive(false);
+            activeCanvas = null;
+            Unpause();
+        }
+        // Close options menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == optionsMenuCanvas)
+        {
+            optionsMenuCanvas.SetActive(false);
+            activeCanvas = previousCanvas;
+            activeCanvas.SetActive(true);
+        }
+    }
+    private void Pause()
+    {
+        isPaused = true;
+        Time.timeScale = 0;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+
+    public void Unpause()
+    {
+        isPaused = false;
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (activeMenu != null)
+        {
+            activeMenu.SetActive(false);
+        }
+
+        activeMenu = null;
+        activeCanvas = null;
+        previousCanvas = null;
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1;
+    }
+
+    public void OptionsMenu()
+    {
+        previousCanvas = activeCanvas;
+
+        optionsMenuCanvas.SetActive(true);
+        activeCanvas = optionsMenuCanvas;
+
+        if (previousCanvas != null)
+        {
+            previousCanvas.SetActive(false);
+        }
+    }
+    #endregion
+
+    #region Game Over and Timer
+    public void GameOver()
+    {
+        gameIsOver = true;
+
+        if (gameOverCanvas != null)
+        { 
+            gameOverCanvas.SetActive(true);
+        }
+        activeCanvas = gameOverCanvas;
+
+        Pause();
+       
+        Debug.Log("Game Over! Time's up!");
+    }
+    #endregion
 }
