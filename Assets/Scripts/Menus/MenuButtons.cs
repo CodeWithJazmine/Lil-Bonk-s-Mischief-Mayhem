@@ -25,6 +25,10 @@ public class MenuButtons : MonoBehaviour
 
 
         // For standalone builds, quit the application
-        Application.Quit();
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 }
