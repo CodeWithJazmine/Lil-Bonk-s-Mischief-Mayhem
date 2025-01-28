@@ -17,7 +17,7 @@ public class CollectibleLetter : MonoBehaviour
         Debug.Log($"Collected Letter: {letter}");
 
         // Notify a game manager or score system
-        ScoreManager.Instance.CollectLetter(letter);
+        GameManager.Instance.scoreManager.CollectLetter(letter);
 
         // Destroy the letter object
         Destroy(gameObject);

@@ -4898,7 +4898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpeed: 10
-  bulletForce: 20
+  bulletForce: 5
   hitEffect: {fileID: 136416, guid: 817e5df2122398544a60922318817440, type: 3}
 --- !u!1001 &6356877244755847832
 PrefabInstance:

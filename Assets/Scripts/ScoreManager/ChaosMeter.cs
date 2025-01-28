@@ -44,9 +44,10 @@ public class ChaosMeter : MonoBehaviour
         else
         {
             currentChaos += amount;
+            currentChaos = Mathf.Clamp(currentChaos, 0.0f, maxChaos);
+
             if (currentChaos >= maxChaos)
             {
-                currentChaos = maxChaos;
                 StartBonkChain();
             }
         }

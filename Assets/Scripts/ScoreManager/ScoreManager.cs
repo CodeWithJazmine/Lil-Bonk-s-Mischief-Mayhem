@@ -3,62 +3,26 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance;
 
     private HashSet<string> collectedLetters = new HashSet<string>();
     private string[] requiredLetters = { "B", "O", "N", "K" };
 
-
-    public int currentScore = 0;
+    private int currentScore = 0;
 
     private int bonkChainCount = 0;
     private float multiplier = 1.0f;
-    [SerializeField] private float multiplierScaler = 0.1f;
+    [SerializeField] private float multiplierScaler = 0.25f;
 
     private bool isBonkChainActive = false;
 
-    [SerializeField] private float bonkChainTimeout = 2.0f; // Max time between bonks
-    
-    private ChaosMeter chaosMeter;
-
-
-
-    private void Awake()
-    {
-        // Ensure there is only one instance of the GameManager
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    private void Start()
-    {
-        // Find the ChaosMeter and subscribe to its events
-        chaosMeter = FindFirstObjectByType<ChaosMeter>();
-        if (chaosMeter != null)
-        {
-            chaosMeter.InitializeBonkChain(bonkChainTimeout); // Set the timeout for the chain
-            chaosMeter.OnChaosMaxed.AddListener(StartBonkChain);
-            chaosMeter.OnChaosReset.AddListener(ResetBonkChain);
-        }
-    }
+    public float bonkChainTimeout = 2.0f; // Max time between bonks
 
     public void HandleBonk(int basePoints)
     {
         // Add points with multiplier
-        currentScore += Mathf.CeilToInt(basePoints * multiplier);
-        Debug.Log($"Score: {currentScore} (Multiplier: {multiplier})");
-
-        // Add to Chaos Meter
-        if (chaosMeter != null)
-        {
-            chaosMeter.AddChaos(chaosMeter.chaosIncreasePerBonk);
-        }
+        // Update score through GameManager
+        GameManager.Instance.UpdateScore(Mathf.CeilToInt(basePoints * multiplier));
+        Debug.Log($"Score: {GameManager.Instance.currentScore} (Multiplier: {multiplier})");
 
         // Update multiplier during active chain
         if (isBonkChainActive)
@@ -69,7 +33,7 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    private void StartBonkChain()
+    public void StartBonkChain()
     {
         isBonkChainActive = true;
         bonkChainCount = 0; // Reset bonk chain count
@@ -77,7 +41,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Bonk Chain Started!");
     }
 
-    private void ResetBonkChain()
+    public void ResetBonkChain()
     {
         isBonkChainActive = false;
         bonkChainCount = 0;
@@ -90,10 +54,9 @@ public class ScoreManager : MonoBehaviour
     public void AddBonus(int bonusPoints)
     {
         currentScore += bonusPoints;
+        GameManager.Instance.UpdateScore(currentScore);
         Debug.Log($"Bonus points! Score: {currentScore}");
     }
-
-
 
     public void CollectLetter(string letter)
     {
@@ -110,18 +73,12 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-  
-
-
   // Debugging 
-[ContextMenu("Add Debug Score")]
+    [ContextMenu("Add Debug Score")]
     public void DebugOnPlayerBonk()
     {
-        HandleBonk(100); 
+        GameManager.Instance.HandleBonk(100); 
     }
-
-
-
 
     private void CompleteObjective()
     {

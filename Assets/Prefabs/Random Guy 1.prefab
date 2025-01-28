@@ -85,6 +85,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3748978313437687228}
+    - targetCorrespondingSourceObject: {fileID: 100166, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5325928601872304179}
   m_SourcePrefab: {fileID: 100100000, guid: 8fa2a9d0520e5304190570b9b32fff5a, type: 3}
 --- !u!1 &120538334217694610 stripped
 GameObject:
@@ -101,7 +104,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 2.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 200
@@ -128,8 +131,9 @@ MonoBehaviour:
   bonk: 0
   superBonk: 0
   fleeDistance: 10
+  useWaypoints: 0
   wanderRadius: 10
-  wanderSpeed: 2
+  normalSpeed: 2
   fleeSpeed: 4.5
   minWaitTime: 2
   maxWaitTime: 5
@@ -137,6 +141,7 @@ MonoBehaviour:
   bonkResistance: 0
   bonkResistGain: 0.1
   bonkResistMax: 0.75
+  bonkedBaseForce: 10
   bonkedTime: 2
   getupTime: 1.5
   currentBonkedTime: 0
@@ -150,6 +155,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 0}
   shotPoint: {fileID: 0}
   muzzleFlash: {fileID: 0}
+  waypoints: []
+  currentWaypoint: 0
   crossFade: 0.02
 --- !u!136 &3748978313437687228
 CapsuleCollider:
@@ -174,3 +181,30 @@ CapsuleCollider:
   m_Height: 1.69
   m_Direction: 1
   m_Center: {x: 0, y: 0.74, z: 0}
+--- !u!54 &5325928601872304179
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120538334217694610}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

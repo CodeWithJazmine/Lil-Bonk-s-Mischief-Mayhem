@@ -2,37 +2,31 @@ using UnityEngine;
 
 public class BreakableObject : MonoBehaviour, IBonkable
 {
-    DinoFracture.FractureGeometry fracture;
+    public Rigidbody[] rbs;
     [SerializeField] float hp = 1.0f;
     [SerializeField] bool broken = false;
-    [SerializeField] Transform explosionPoint;
+    [SerializeField] Transform debugExplosionPoint;
     [SerializeField] float explosionImpulse = 10f;
     [SerializeField] float explosionUpwardModifier = 1f;
     [SerializeField] float explosionRadius = 3f;
     [SerializeField] bool testBreak = false;
     [SerializeField] float destroyTime = 10f;
-    [SerializeField] LayerMask mask;
 
     private void Awake()
     {
-        fracture = GetComponent<DinoFracture.FractureGeometry>();
-    }
-
-    void Start()
-    {
-        if (explosionPoint == null) explosionPoint = transform;
+        rbs = GetComponentsInChildren<Rigidbody>();
     }
 
     void Update()
     {
         if(testBreak)
         {
-            OnBonked(hp);
+            OnBonked(hp, debugExplosionPoint.position);
             testBreak = false;
         }
     }
 
-    public void OnBonked(float value)
+    public void OnBonked(float value, Vector3 position)
     {
         if (broken) return; // Already broken, don't respond to bonking
         Debug.Log("Bonked with value: " + value.ToString());
@@ -40,17 +34,14 @@ public class BreakableObject : MonoBehaviour, IBonkable
 
         if(hp <= 0.0f)
         {
-            if(fracture != null)
-                fracture.Fracture();
-
-            Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, mask);
-
-            foreach(var col in colliders)
+            foreach(var rb in rbs)
             {
-                Rigidbody rb;
-                col.TryGetComponent<Rigidbody>(out rb);
-                if(rb)
-                    rb.AddExplosionForce(explosionImpulse, explosionPoint.position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
+                rb.transform.SetParent(null);
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.constraints = RigidbodyConstraints.None;
+                rb.AddExplosionForce(explosionImpulse, position, explosionRadius, explosionUpwardModifier, ForceMode.Impulse);
+                Destroy(rb.gameObject, destroyTime);
             }
 
             broken = true;
