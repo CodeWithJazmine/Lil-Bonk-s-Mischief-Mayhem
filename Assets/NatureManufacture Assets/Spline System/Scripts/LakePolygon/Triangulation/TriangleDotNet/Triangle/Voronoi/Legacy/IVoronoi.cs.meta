@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3799fbad454642241a23de181ffb5464
+timeCreated: 1487036983
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147383
+  packageName: L.V.E 2019 - Lava & Volcano Environment 2019
+  packageVersion: 1.8
+  assetPath: Assets/NatureManufacture Assets/Spline System/Scripts/LakePolygon/Triangulation/TriangleDotNet/Triangle/Voronoi/Legacy/IVoronoi.cs
+  uploadId: 616048
