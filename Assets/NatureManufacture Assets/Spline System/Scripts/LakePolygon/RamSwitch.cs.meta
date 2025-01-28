@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 0e75765456db0a2459a8393520791507
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147383
+  packageName: L.V.E 2019 - Lava & Volcano Environment 2019
+  packageVersion: 1.8
+  assetPath: Assets/NatureManufacture Assets/Spline System/Scripts/LakePolygon/RamSwitch.cs
+  uploadId: 616048
