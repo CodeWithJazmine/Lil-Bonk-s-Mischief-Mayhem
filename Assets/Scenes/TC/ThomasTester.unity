@@ -252,7 +252,6 @@ GameObject:
   - component: {fileID: 698540700}
   - component: {fileID: 698540699}
   - component: {fileID: 698540698}
-  - component: {fileID: 698540697}
   m_Layer: 7
   m_Name: Cube (2)
   m_TagString: Untagged
@@ -260,18 +259,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &698540697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 698540696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6ed90fc42b998249810c8ef33391251, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &698540698
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -422,7 +409,6 @@ GameObject:
   - component: {fileID: 864031742}
   - component: {fileID: 864031741}
   - component: {fileID: 864031740}
-  - component: {fileID: 864031739}
   m_Layer: 7
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -430,18 +416,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &864031739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864031738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6ed90fc42b998249810c8ef33391251, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &864031740
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -539,29 +513,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 10389356159452750, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-      propertyPath: m_TagString
-      value: MainCamera
-      objectReference: {fileID: 0}
     - target: {fileID: 297682575580473376, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 1729922992798354231, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-      propertyPath: useMouseAim
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1729922992798354231, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-      propertyPath: cameraFollow
-      value: 
-      objectReference: {fileID: 1990092678}
-    - target: {fileID: 1729922992798354231, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-      propertyPath: aimLayer.m_Bits
-      value: 256
-      objectReference: {fileID: 0}
-    - target: {fileID: 1729922992798354231, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-      propertyPath: bonkableLayer.m_Bits
-      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 6086539215425075651, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
       propertyPath: m_LocalPosition.x
@@ -825,17 +779,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1990092678 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3548509691465424206, guid: 9d30c6b4f62d85345892c81b4b5c49be, type: 3}
-  m_PrefabInstance: {fileID: 969670371}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3f9346c04fbb684abaeba9406e81a49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2129841572
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,7 +791,6 @@ GameObject:
   - component: {fileID: 2129841576}
   - component: {fileID: 2129841575}
   - component: {fileID: 2129841574}
-  - component: {fileID: 2129841573}
   m_Layer: 7
   m_Name: Cube (3)
   m_TagString: Untagged
@@ -856,18 +798,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2129841573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2129841572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6ed90fc42b998249810c8ef33391251, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &2129841574
 BoxCollider:
   m_ObjectHideFlags: 0
