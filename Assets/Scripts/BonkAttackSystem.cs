@@ -267,7 +267,7 @@ public class BonkAttackSystem : MonoBehaviour
         //isDetecting = true;
         currentGizmoColor = activeGizmoColor;
 
-        float impactValue = isCharging ? CalculateChargeValue() : 0f; 
+        float impactValue = isCharging ? CalculateChargeValue() : 0.1f; 
 
         // detect objects using the transform's position and rotation
         Collider[] hitColliders = Physics.OverlapBox(
