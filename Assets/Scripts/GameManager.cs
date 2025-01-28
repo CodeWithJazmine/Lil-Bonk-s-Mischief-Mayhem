@@ -1,8 +1,19 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [Header("Game Variables")]
+    private bool gameStarted = false;
+    private bool gameIsOver = false;
+    [SerializeField] private float gameTimer = 120.0f; // Game timer in seconds
+
+    [Header("UI")]
+    public GameObject activeMenu;
+    public GameObject activeCanvas, previousCanvas;
+    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas;
 
     [Header("Score System")]
     public int currentScore = 0;
@@ -17,35 +28,71 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-        //DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        if (scoreManager == null)
-        {
-            Debug.Log("ScoreManager not assigned.");
-        }
-        if (chaosMeter == null)
-        {
-            Debug.Log("ChaosMeter not assigned.");
-        }
-        else
-        {
-            chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for the chain
-            chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
-            chaosMeter.OnChaosReset.AddListener(OnChaosMeterReset);
-        }
-
         InitializeGame();
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Reinitialize the game every time the scene is loaded
+        InitializeGame();
+    }
+
+    private void Update()
+    {
+        HandleGameTimer();
+        HandleMenuInput();
     }
 
     private void InitializeGame()
     {
+        if (startMenuCanvas == null || pauseMenuCanvas == null || optionsMenuCanvas == null || gameOverCanvas == null)
+        {
+            Debug.Log("Some or all menu canvases not assigned in the GameManager.");
+            return;
+        }
+
+        if (scoreManager == null)
+        {
+            Debug.Log("ScoreManager not assigned.");
+            return;
+        }
+
+        if (chaosMeter == null)
+        {
+            Debug.Log("ChaosMeter not assigned.");
+            return;
+        }
+
+        gameIsOver = false;
         currentScore = 0;
+
+        startMenuCanvas.SetActive(true);
+        pauseMenuCanvas.SetActive(false);
+        optionsMenuCanvas.SetActive(false);
+        gameOverCanvas.SetActive(false);
+
+        chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for thechain
+        chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
+        chaosMeter.OnChaosReset.AddListener(OnChaosMeterReset);
+
+        Pause(); // Pause the game until the player starts it
     }
 
-#region Score System
+    #region Score System and Chaos Meter
 
     // HandleBonk: call this when the player successfully bonks a BONKABLE object.
     public void HandleBonk(int points)
@@ -85,5 +132,123 @@ public class GameManager : MonoBehaviour
         }
     }
 
- #endregion // End of Score System
+    #endregion // End of Score System
+
+    #region Menu System
+
+    private void HandleMenuInput()
+    {
+        // Start the game when the player presses Space
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            startMenuCanvas.SetActive(false);
+            gameStarted = true;
+            Unpause();
+        }
+
+        // Restart game on game over
+        if (gameIsOver && Input.GetKeyDown(KeyCode.Space))
+        {
+            RestartGame();
+        }
+
+        // Open pause menu
+        if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && gameStarted && activeMenu == null && activeCanvas == null)
+        {
+            pauseMenuCanvas.SetActive(true);
+            activeCanvas = pauseMenuCanvas;
+            previousCanvas = activeCanvas;
+            Pause();
+        }
+        // Close pause menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == pauseMenuCanvas)
+        {
+            pauseMenuCanvas.SetActive(false);
+            activeCanvas = null;
+            Unpause();
+        }
+        // Close options menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == optionsMenuCanvas)
+        {
+            optionsMenuCanvas.SetActive(false);
+            activeCanvas = previousCanvas;
+            activeCanvas.SetActive(true);
+        }
+    }
+    private void Pause()
+    {
+        Time.timeScale = 0;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+
+    public void Unpause()
+    {
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (activeMenu != null)
+        {
+            activeMenu.SetActive(false);
+        }
+
+        activeMenu = null;
+        activeCanvas = null;
+        previousCanvas = null;
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Unpause();
+    }
+
+    public void OptionsMenu()
+    {
+        previousCanvas = activeCanvas;
+
+        optionsMenuCanvas.SetActive(true);
+        activeCanvas = optionsMenuCanvas;
+
+        if (previousCanvas != null)
+        {
+            previousCanvas.SetActive(false);
+        }
+    }
+    #endregion
+
+    #region Game Over and Timer
+    public void GameOver()
+    {
+        gameIsOver = true;
+
+        if (gameOverCanvas != null)
+        { 
+            gameOverCanvas.SetActive(true);
+        }
+        activeCanvas = gameOverCanvas;
+
+        Pause();
+       
+        Debug.Log("Game Over! Time's up!");
+    }
+
+    private void HandleGameTimer()
+    {
+        if (gameStarted && !gameIsOver)
+        {
+            if (gameTimer > 0)
+            {
+                gameTimer -= Time.deltaTime;
+                // Update Timer UI
+            }
+            else
+            {
+                gameTimer = 0;
+                GameOver();
+            }
+        }
+    }
+    #endregion
 }
