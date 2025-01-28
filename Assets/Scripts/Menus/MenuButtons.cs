@@ -21,9 +21,10 @@ public class MenuButtons : MonoBehaviour
 
     public void Quit()
     {
-        //#if UNITY_WEBGL
-        //GameManager.Instance.RestartGame();
-        //#else
-        //Application.Quit();
+        // TODO: Return to the main menu for WebGL builds
+
+
+        // For standalone builds, quit the application
+        Application.Quit();
     }
 }

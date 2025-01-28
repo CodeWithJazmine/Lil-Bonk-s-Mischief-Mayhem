@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     public GameObject activeMenu;
     public GameObject activeCanvas, previousCanvas;
     public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas;
-    private bool isPaused;
 
     [Header("Score System")]
     public int currentScore = 0;
@@ -52,56 +51,48 @@ public class GameManager : MonoBehaviour
         InitializeGame();
     }
 
-
     private void Update()
     {
-        UpdateGameTimer();
-        CheckForMenuInput();
+        HandleGameTimer();
+        HandleMenuInput();
     }
+
     private void InitializeGame()
     {
+        if (startMenuCanvas == null || pauseMenuCanvas == null || optionsMenuCanvas == null || gameOverCanvas == null)
+        {
+            Debug.Log("Some or all menu canvases not assigned in the GameManager.");
+            return;
+        }
+
+        if (scoreManager == null)
+        {
+            Debug.Log("ScoreManager not assigned.");
+            return;
+        }
+
+        if (chaosMeter == null)
+        {
+            Debug.Log("ChaosMeter not assigned.");
+            return;
+        }
+
         gameIsOver = false;
+        currentScore = 0;
+
         startMenuCanvas.SetActive(true);
         pauseMenuCanvas.SetActive(false);
         optionsMenuCanvas.SetActive(false);
         gameOverCanvas.SetActive(false);
 
+        chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for thechain
+        chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
+        chaosMeter.OnChaosReset.AddListener(OnChaosMeterReset);
 
-        if (scoreManager == null)
-        {
-            Debug.Log("ScoreManager not assigned.");
-        }
-        if (chaosMeter == null)
-        {
-            Debug.Log("ChaosMeter not assigned.");
-        }
-        else
-        {
-            chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for the chain
-            chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
-            chaosMeter.OnChaosReset.AddListener(OnChaosMeterReset);
-        }
-        currentScore = 0;
+        Pause(); // Pause the game until the player starts it
     }
 
-    private void UpdateGameTimer()
-    {
-        if (gameStarted && !gameIsOver)
-        {
-            if (gameTimer > 0)
-            {
-                gameTimer -= Time.deltaTime;
-                // Update Timer UI
-            }
-            else
-            {
-                gameTimer = 0;
-                GameOver();
-            }
-        }
-    }
-
-    #region Score System
+    #region Score System and Chaos Meter
 
     // HandleBonk: call this when the player successfully bonks a BONKABLE object.
     public void HandleBonk(int points)
@@ -145,13 +136,14 @@ public class GameManager : MonoBehaviour
 
     #region Menu System
 
-    private void CheckForMenuInput()
+    private void HandleMenuInput()
     {
         // Start the game when the player presses Space
         if (Input.GetKeyDown(KeyCode.Space))
         {
             startMenuCanvas.SetActive(false);
             gameStarted = true;
+            Unpause();
         }
 
         // Restart game on game over
@@ -185,7 +177,6 @@ public class GameManager : MonoBehaviour
     }
     private void Pause()
     {
-        isPaused = true;
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
@@ -193,7 +184,6 @@ public class GameManager : MonoBehaviour
 
     public void Unpause()
     {
-        isPaused = false;
         Time.timeScale = 1;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -211,7 +201,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        Time.timeScale = 1;
+        Unpause();
     }
 
     public void OptionsMenu()
@@ -242,6 +232,23 @@ public class GameManager : MonoBehaviour
         Pause();
        
         Debug.Log("Game Over! Time's up!");
+    }
+
+    private void HandleGameTimer()
+    {
+        if (gameStarted && !gameIsOver)
+        {
+            if (gameTimer > 0)
+            {
+                gameTimer -= Time.deltaTime;
+                // Update Timer UI
+            }
+            else
+            {
+                gameTimer = 0;
+                GameOver();
+            }
+        }
     }
     #endregion
 }
