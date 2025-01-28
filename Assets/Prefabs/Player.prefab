@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3548509691465424206}
   m_Layer: 0
   m_Name: MainCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -150,11 +150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f9346c04fbb684abaeba9406e81a49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offSet: {x: 0, y: 0, z: 0}
   target: {fileID: 3211317841245624125}
-  mouseSensitivity: 100
+  offset: {x: 0, y: 0, z: 0}
   distanceFromPlayer: 5
-  verticalAngleLimit: 80
+  mouseSensitivity: 100
+  maxUpwardAngle: 50
+  maxDownwardAngle: -10
 --- !u!1 &197784075881517024
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,12 +180,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 197784075881517024}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.825}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.8249999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 860139846214721405}
+  m_Father: {fileID: 2977874281075439609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &297682575580473376
 GameObject:
@@ -424,7 +425,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2977874281075439609}
-  - {fileID: 5368591406187875197}
   m_Father: {fileID: 6086539215425075651}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7344293658806148180
@@ -520,6 +520,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4248925544863057823}
+  - {fileID: 5368591406187875197}
   m_Father: {fileID: 860139846214721405}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6907979995579698850
@@ -607,14 +608,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxChargeTime: 2
   attackCooldown: 0.5
+  basicAttackSpeedMultiplier: 1.6
+  chargeAttackSpeedMultiplier: 0.8
   allowMovementDuringAttack: 0
+  useMouseAim: 1
+  attackRotationSpeed: 720
+  aimLayer:
+    serializedVersion: 2
+    m_Bits: 256
   attackBoxSize: {x: 0.75, y: 0.94, z: 0.94}
   detectionPoint: {fileID: 5368591406187875197}
-  normalGizmoColor: {r: 0, g: 0, b: 1, a: 1}
-  activeGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   playerMovement: {fileID: 7344293658806148180}
   malletRotation: {fileID: 6907979995579698850}
-  parentMallet: {fileID: 0}
+  cameraFollow: {fileID: 3548509691465424206}
   bonkableLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
+  normalGizmoColor: {r: 0, g: 0, b: 1, a: 1}
+  activeGizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  holdThreshold: 0.15
