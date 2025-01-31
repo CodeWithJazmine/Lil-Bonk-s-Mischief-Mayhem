@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             GameManager.Instance.HandleBonk(100);
+            GameManager.Instance.PlayBonkSound();
         }
 
     }
