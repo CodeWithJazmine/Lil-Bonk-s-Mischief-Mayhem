@@ -28,11 +28,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Debug controls
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            GameManager.Instance.HandleBonk(100);
-            GameManager.Instance.PlayBonkSound();
-        }
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    GameManager.Instance.HandleBonk(100);
+        //    GameManager.Instance.PlayBonkSound();
+        //}
 
     }
 
