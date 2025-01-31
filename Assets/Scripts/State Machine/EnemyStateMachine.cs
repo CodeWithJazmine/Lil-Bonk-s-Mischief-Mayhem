@@ -18,7 +18,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     private Transform player;
     private Rigidbody playerRB;
     private Rigidbody rb;
-    [SerializeField] private float fleeDistance = 5f; // Distance at which the enemy flees
+    private PlayerDetector playerDetector;
     [SerializeField] private bool useWaypoints = false;
     [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float normalSpeed = 2f;
@@ -35,7 +35,6 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float currentBonkedTime = 0;
     [SerializeField] private float currentGetupTime;
     [SerializeField] private bool isAggressive = false;
-    [SerializeField] private float chaseRadius = 5;
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField, Tooltip("Needs to be very close for melee attackers.")] private float attackRadius = 3f;
     [SerializeField] private float attackTime = 3f;
@@ -76,6 +75,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+        playerDetector = GetComponentInChildren<PlayerDetector>();
     }
 
     void Start()
@@ -117,27 +117,19 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         }
 
         // Transition logic
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < fleeDistance
+        if (PlayerInSight()
             && currentState != State.Bonked
-            && currentState != State.Getup
-            && !isAggressive)
+            && currentState != State.Getup)
         {
-            currentState = State.Flee;
-        }
-
-        else if (distanceToPlayer < chaseRadius
-            && currentState != State.Bonked
-            && currentState != State.Getup
-            && currentState != State.Attack
-            && isAggressive)
-        {
-            currentState = State.Chase;
+            if(!isAggressive)
+                currentState = State.Flee;
+            else
+                currentState = State.Flee;
         }
 
         else if (!useWaypoints
             &&currentState == State.Flee 
-            && distanceToPlayer >= fleeDistance)
+            && !PlayerInSight() )
         {
             currentState = State.Wander;
             SetNewWanderTarget();
@@ -145,7 +137,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
         else if (useWaypoints
             &&currentState == State.Flee 
-            && distanceToPlayer >= fleeDistance)
+            && !PlayerInSight() )
         {
             currentState = State.Waypoint;
             SetNextWaypointTarget();
@@ -291,6 +283,11 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         isRunning = false;
         isIdle = false;
         isChasing = false;
+    }
+
+    bool PlayerInSight()
+    {
+        return playerDetector.playerIsDetected;
     }
 
     bool HasReachedDestination()
