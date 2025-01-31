@@ -44,7 +44,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private GameObject bulletPrefab = null;
     [SerializeField] private Transform shotPoint = null;
     [SerializeField] private ParticleSystem muzzleFlash = null;
-    [SerializeField] private Transform[] waypoints = null;
+    public Transform[] waypoints = null;
     [SerializeField] private int currentWaypoint = 0;
 
     NavMeshAgent agent;
