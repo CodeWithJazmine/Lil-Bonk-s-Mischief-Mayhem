@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreAnimationDuration = 1.0f;
     [SerializeField] private TextMeshProUGUI scoreText;
 
+    [Header("Audio")]
+    public AudioSource bonkSound;
+
 
     private void Awake()
     {
@@ -294,4 +297,9 @@ public class GameManager : MonoBehaviour
         }
     }
     #endregion
+
+    public void PlayBonkSound()
+    {
+        bonkSound.Play();
+    }
 }
