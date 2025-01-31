@@ -1,5 +1,8 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,12 +16,14 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public GameObject activeMenu;
     public GameObject activeCanvas, previousCanvas;
-    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas;
+    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas, chaosMeterObj;
 
     [Header("Score System")]
     public int currentScore = 0;
+    [SerializeField] private float scoreAnimationDuration = 1.0f;
     public ScoreManager scoreManager;
     public ChaosMeter chaosMeter;
+    public TextMeshProUGUI scoreText;
 
     private void Awake()
     {
@@ -84,6 +89,8 @@ public class GameManager : MonoBehaviour
         pauseMenuCanvas.SetActive(false);
         optionsMenuCanvas.SetActive(false);
         gameOverCanvas.SetActive(false);
+        scoreText.gameObject.SetActive(false);
+
 
         chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for thechain
         chaosMeter.OnChaosMaxed.AddListener(OnChaosMeterMaxed);
@@ -112,7 +119,24 @@ public class GameManager : MonoBehaviour
     // Do not call ths function if related to bonks or bonk chain. (Use HandleBonk instead)
     public void UpdateScore(int points)
     {
+        int previousScore = currentScore;
         currentScore += points;
+        StopCoroutine("AnimateScore");
+        StartCoroutine(AnimateScore(previousScore, currentScore, scoreAnimationDuration)); // Adjust duration as needed
+    }
+
+    // AnimateScore: can be used to animate the score UI when the player's score changes so it looks more dynamic.
+    private IEnumerator AnimateScore(int startValue, int endValue, float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float lerpValue = Mathf.Lerp(startValue, endValue, time / duration);
+            scoreText.text = Mathf.RoundToInt(lerpValue).ToString();
+            yield return null;
+        }
+        scoreText.text = endValue.ToString();
     }
 
     // OnChaosMeterMaxed and OnChaosMeterReset are called by ChaosMeter events.
@@ -180,6 +204,9 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
+
+        chaosMeterObj.SetActive(false);
+        scoreText.gameObject.SetActive(false);
     }
 
     public void Unpause()
@@ -192,6 +219,9 @@ public class GameManager : MonoBehaviour
         {
             activeMenu.SetActive(false);
         }
+
+        chaosMeterObj.SetActive(true);
+        scoreText.gameObject.SetActive(true);
 
         activeMenu = null;
         activeCanvas = null;

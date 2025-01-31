@@ -347,15 +347,16 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     private void Flee()
     {
+        agent.speed = fleeSpeed;
+        agent.stoppingDistance = cachedStoppingDistance;
+        agent.updateRotation = true;
+        agent.updatePosition = true;
+
         if (!agent.hasPath)
         {
             Vector3 fleePosition = GetFleePosition();
             if (fleePosition != Vector3.zero)
             {
-                agent.updatePosition = true;
-                agent.updateRotation = true;
-                agent.speed = fleeSpeed;
-                agent.stoppingDistance = cachedStoppingDistance;
                 agent.SetDestination(fleePosition);
             }
         }
