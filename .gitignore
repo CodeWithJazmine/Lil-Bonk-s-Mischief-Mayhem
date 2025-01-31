@@ -25,6 +25,8 @@
 
 #UMotion Pro - Pro Asset being used by Terrence
 /[Aa]ssets/UMotionEditor*
+#Technie Collider Asset being used by Terrence
+/[Aa]ssets/Technie*
 
 # Visual Studio cache directory
 .vs/

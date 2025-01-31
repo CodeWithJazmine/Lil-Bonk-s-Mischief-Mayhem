@@ -12,13 +12,14 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     public delegate void EnemyBonked();
     public event EnemyBonked OnEnemyBonked;
 
-    private State currentState;
+    ChaosMeter ChaosMeter;
 
     // References & Control variables
     private Transform player;
     private Rigidbody playerRB;
     private Rigidbody rb;
     private PlayerDetector playerDetector;
+    [SerializeField] private State currentState;
     [SerializeField] private bool useWaypoints = false;
     [SerializeField] private float wanderRadius = 10f;
     [SerializeField] private float normalSpeed = 2f;
@@ -29,8 +30,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
     [SerializeField] private float bonkResistance = 0;
     [SerializeField] private float bonkResistGain = 0.1f;
     [SerializeField] private float bonkResistMax = 0.75f;
-    [SerializeField] private float bonkedBaseForce = 10f; // Base amount of force for velocity change when player bonks enemy
+    [SerializeField] private float bonkedBaseForce = 100f; // Base amount of force for velocity change when player bonks enemy
     [SerializeField] private float bonkedTime = 2f;
+    [SerializeField] private int bonkPoints = 1;
     [SerializeField] private float getupTime = 1.5f;
     [SerializeField] private float currentBonkedTime = 0;
     [SerializeField] private float currentGetupTime;
@@ -80,6 +82,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     void Start()
     {
+        ChaosMeter = GameManager.Instance.transform.GetComponent<ChaosMeter>();
         player = GameObject.FindWithTag("Player").transform;
         playerRB = player.GetComponent<Rigidbody>();
         cachedStoppingDistance = agent.stoppingDistance;
@@ -119,7 +122,8 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         // Transition logic
         if (PlayerInSight()
             && currentState != State.Bonked
-            && currentState != State.Getup)
+            && currentState != State.Getup
+            && currentState != State.Attack)
         {
             if(!isAggressive)
                 currentState = State.Flee;
@@ -161,6 +165,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
                 currentState = State.Wander;
 
             agent.isStopped = false;
+            agent.ResetPath();
         }
 
         else if(currentState == State.Attack)
@@ -237,6 +242,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         else
         {
             var distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            Debug.Log("Distance to Player: " + distanceToPlayer.ToString());
             // If the player is outside of attack range and we've reached our targeted position
             if (HasReachedDestination()
                 && distanceToPlayer > attackRadius)
@@ -388,9 +394,10 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
         // If already bonked, or getting up play bound animation
         if(currentState == State.Bonked || currentState == State.Getup)
         {
+            // DO NOT ADD POINTS FOR THIS OR PLAYERS WILL ABUSE TF OUT OF IT LOL
             agent.isStopped = true;
             agent.Warp(transform.position);
-            var forceDir = (position - transform.position).normalized;
+            var forceDir = (transform.position - position).normalized;
             rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             currentBonkedTime = 0;
             currentGetupTime = 0;
@@ -413,12 +420,13 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             currentBonkedTime = 0;
             // Turn towards position
             TurnTowardsPosition(position);
-            var forceDir = (position - transform.position).normalized;
+            var forceDir = (transform.position - position).normalized;
             rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             isWalking = false;
             isRunning = false;
             isIdle = false;
             OnEnemyBonked?.Invoke();
+            ChaosMeter.AddChaos(bonkPoints * 2);
             return;
         }    
 
@@ -435,7 +443,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             currentBonkedTime = 0;
             // Turn towards position
             TurnTowardsPosition(position);
-            var forceDir = (position - transform.position).normalized;
+            var forceDir = (transform.position - position).normalized;
             rb.AddForce(forceDir * bonkedBaseForce * value, ForceMode.VelocityChange);
             bonkResistance += bonkResistGain;
             if (bonkResistance >= bonkResistMax) bonkResistance = bonkResistMax;
@@ -443,6 +451,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             isRunning = false;
             isIdle = false;
             OnEnemyBonked?.Invoke();
+            ChaosMeter.AddChaos(bonkPoints);
         }
     }
 

@@ -177,10 +177,9 @@ GameObject:
   - component: {fileID: 6361100698358494060}
   - component: {fileID: 4718152590723915338}
   - component: {fileID: 8056148972721164424}
-  - component: {fileID: 2319551907808160809}
   - component: {fileID: 2932180325424111606}
-  - component: {fileID: 6917367915099299786}
   - component: {fileID: 3543854915866087481}
+  - component: {fileID: 8188610524254550247}
   m_Layer: 7
   m_Name: government-building-fire-station
   m_TagString: Untagged
@@ -196,7 +195,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7991235455198084046}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 80, y: 0, z: 160}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -305,27 +304,6 @@ MonoBehaviour:
   EntireMeshBounds:
     m_Center: {x: 0.2884388, y: 3.7506857, z: 0}
     m_Extent: {x: 17.033468, y: 3.890411, z: 8.47675}
---- !u!65 &2319551907808160809
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7991235455198084046}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 27.6, y: 7.780822, z: 14.1}
-  m_Center: {x: -0.5, y: 3.7506857, z: 0}
 --- !u!54 &2932180325424111606
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -353,27 +331,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!65 &6917367915099299786
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7991235455198084046}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 27.6, y: 7.780822, z: 14.1}
-  m_Center: {x: -0.5, y: 3.7506857, z: 0}
 --- !u!114 &3543854915866087481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,6 +355,21 @@ MonoBehaviour:
   dustParticle: {fileID: 0}
   breakEffect: {fileID: 3677737050736823928, guid: 08ce7d0463ceb0c428b0674bab40dd18, type: 3}
   dustEffect: {fileID: 7307048483743651836, guid: 4b89e891e298bdb4382ae06c36fc6779, type: 3}
+  chaosOnDestruction: 10
+--- !u!114 &8188610524254550247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7991235455198084046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86df15996814cff45aed711a3ccf2a0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintingData: {fileID: 11400000, guid: 826ba919b56cb3244bc84926e46ac647, type: 2}
+  hullData: {fileID: 11400000, guid: c377abea16ec32642a219666f98518aa, type: 2}
 --- !u!1001 &4577538683923118296
 PrefabInstance:
   m_ObjectHideFlags: 0

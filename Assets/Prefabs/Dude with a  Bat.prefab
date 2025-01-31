@@ -150,6 +150,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: eac5bc7cc23efc74ab8e409b6f95847f, type: 2}
     - target: {fileID: 9500000, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: 16044bf911e3e664d81c3be8863c77e8, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
@@ -219,6 +223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bonk: 0
   superBonk: 0
+  currentState: 0
   useWaypoints: 0
   wanderRadius: 10
   normalSpeed: 2

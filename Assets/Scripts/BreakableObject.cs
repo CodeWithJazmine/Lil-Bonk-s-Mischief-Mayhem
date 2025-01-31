@@ -14,6 +14,8 @@ public class BreakableObject : MonoBehaviour, IBonkable
     [SerializeField] float destroyTime = 10f;
     [SerializeField] ParticleSystem dustParticle = null;
     [SerializeField] GameObject breakEffect = null, dustEffect;
+    [SerializeField] float chaosOnDestruction = 10;
+    ChaosMeter ChaosMeter;
 
     private void Awake()
     {
@@ -26,6 +28,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
     void Start()
     {
         dustParticle = Instantiate(dustEffect.gameObject, transform.position, transform.rotation).GetComponent<ParticleSystem>();
+        ChaosMeter = GameManager.Instance.transform.GetComponent<ChaosMeter>();
     }
 
     void Update()
@@ -48,6 +51,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
             GetComponent<FractureGeometry>().Fracture();
             if (dustParticle != null) dustParticle.Play();
             if(breakEffect != null) Instantiate(breakEffect, position, Quaternion.identity);
+            ChaosMeter.AddChaos(chaosOnDestruction);
 
             foreach(var rb in rbs)
             {

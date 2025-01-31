@@ -11,10 +11,11 @@ GameObject:
   - component: {fileID: 2809179998988531941}
   - component: {fileID: 7558905875600235774}
   - component: {fileID: 1353954818525820119}
-  - component: {fileID: 4401539017288083226}
   - component: {fileID: 3839028963476192435}
   - component: {fileID: 337559607260525972}
   - component: {fileID: 2578552427043742123}
+  - component: {fileID: 5948594500961517713}
+  - component: {fileID: 3169014792378083950}
   m_Layer: 7
   m_Name: infrastructure-building-ms-parking-lot
   m_TagString: Untagged
@@ -92,28 +93,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4401539017288083226
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5998466233326297539}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -465065482679266641, guid: c012075945650429aa046af327f375ad, type: 3}
 --- !u!114 &3839028963476192435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +187,43 @@ MonoBehaviour:
   dustParticle: {fileID: 0}
   breakEffect: {fileID: 3677737050736823928, guid: 08ce7d0463ceb0c428b0674bab40dd18, type: 3}
   dustEffect: {fileID: 7307048483743651836, guid: 4b89e891e298bdb4382ae06c36fc6779, type: 3}
+  chaosOnDestruction: 10
+--- !u!114 &5948594500961517713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998466233326297539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86df15996814cff45aed711a3ccf2a0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintingData: {fileID: 11400000, guid: 92f72c6d158a4ae458e0c9493500f94c, type: 2}
+  hullData: {fileID: 11400000, guid: 69d422d60fd881b4b873c5f95684e25a, type: 2}
+--- !u!64 &3169014792378083950
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998466233326297539}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3028595068191973446, guid: 69d422d60fd881b4b873c5f95684e25a, type: 2}
 --- !u!1001 &4920231004442642585
 PrefabInstance:
   m_ObjectHideFlags: 0
