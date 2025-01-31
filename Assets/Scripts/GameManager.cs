@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource bonkSound;
+    public AudioSource explosionSound;
 
 
     private void Awake()
@@ -301,5 +302,10 @@ public class GameManager : MonoBehaviour
     public void PlayBonkSound()
     {
         bonkSound.Play();
+    }
+
+    public void PlayExplosionSound()
+    {
+        explosionSound.Play();
     }
 }

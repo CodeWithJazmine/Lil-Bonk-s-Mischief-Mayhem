@@ -391,8 +391,9 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
 
     public void OnBonked(float value, Vector3 position)
     {
+        GameManager.Instance.PlayBonkSound();
         // If already bonked, or getting up play bound animation
-        if(currentState == State.Bonked || currentState == State.Getup)
+        if (currentState == State.Bonked || currentState == State.Getup)
         {
             // DO NOT ADD POINTS FOR THIS OR PLAYERS WILL ABUSE TF OUT OF IT LOL
             agent.isStopped = true;

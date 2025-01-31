@@ -52,6 +52,7 @@ public class BreakableObject : MonoBehaviour, IBonkable
             if (dustParticle != null) dustParticle.Play();
             if(breakEffect != null) Instantiate(breakEffect, position, Quaternion.identity);
             ChaosMeter.AddChaos(chaosOnDestruction);
+            GameManager.Instance.PlayExplosionSound();
 
             foreach(var rb in rbs)
             {
