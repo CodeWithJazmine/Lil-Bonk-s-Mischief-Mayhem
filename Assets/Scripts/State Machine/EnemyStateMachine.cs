@@ -124,7 +124,7 @@ public class EnemyStateMachine : MonoBehaviour, IBonkable
             if(!isAggressive)
                 currentState = State.Flee;
             else
-                currentState = State.Flee;
+                currentState = State.Chase;
         }
 
         else if (!useWaypoints
