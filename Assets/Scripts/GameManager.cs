@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private bool gameStarted = false;
     private bool gameIsOver = false;
     [SerializeField] private float gameTimer = 120.0f; // Game timer in seconds
+    [SerializeField] private TextMeshProUGUI timerText;
 
     [Header("UI")]
     public GameObject activeMenu;
@@ -20,10 +21,11 @@ public class GameManager : MonoBehaviour
 
     [Header("Score System")]
     public int currentScore = 0;
-    [SerializeField] private float scoreAnimationDuration = 1.0f;
     public ScoreManager scoreManager;
     public ChaosMeter chaosMeter;
-    public TextMeshProUGUI scoreText;
+    [SerializeField] private float scoreAnimationDuration = 1.0f;
+    [SerializeField] private TextMeshProUGUI scoreText;
+
 
     private void Awake()
     {
@@ -90,6 +92,7 @@ public class GameManager : MonoBehaviour
         optionsMenuCanvas.SetActive(false);
         gameOverCanvas.SetActive(false);
         scoreText.gameObject.SetActive(false);
+        timerText.gameObject.SetActive(false);
 
 
         chaosMeter.InitializeBonkChain(scoreManager.bonkChainTimeout); // Set the timeout for thechain
@@ -133,10 +136,10 @@ public class GameManager : MonoBehaviour
         {
             time += Time.deltaTime;
             float lerpValue = Mathf.Lerp(startValue, endValue, time / duration);
-            scoreText.text = Mathf.RoundToInt(lerpValue).ToString();
+            scoreText.text = Mathf.RoundToInt(lerpValue).ToString("D5"); // with leading zeros for 5 digits
             yield return null;
         }
-        scoreText.text = endValue.ToString();
+        scoreText.text = endValue.ToString("D5"); // with leading zeros for 5 digits
     }
 
     // OnChaosMeterMaxed and OnChaosMeterReset are called by ChaosMeter events.
@@ -207,6 +210,7 @@ public class GameManager : MonoBehaviour
 
         chaosMeterObj.SetActive(false);
         scoreText.gameObject.SetActive(false);
+        timerText.gameObject.SetActive(false);
     }
 
     public void Unpause()
@@ -222,6 +226,7 @@ public class GameManager : MonoBehaviour
 
         chaosMeterObj.SetActive(true);
         scoreText.gameObject.SetActive(true);
+        timerText.gameObject.SetActive(true);
 
         activeMenu = null;
         activeCanvas = null;
@@ -271,11 +276,19 @@ public class GameManager : MonoBehaviour
             if (gameTimer > 0)
             {
                 gameTimer -= Time.deltaTime;
-                // Update Timer UI
+
+                // convert the timer to minutes, seconds, and milliseconds
+                int minutes = Mathf.FloorToInt(gameTimer / 60);
+                int seconds = Mathf.FloorToInt(gameTimer % 60);
+                int milliseconds = Mathf.FloorToInt((gameTimer * 100) % 100);
+
+                // update the timer text
+                timerText.text = $"{minutes:00}:{seconds:00}:{milliseconds:00}";
             }
             else
             {
                 gameTimer = 0;
+                timerText.text = "00:00:00"; // make sure the timer displays 00:00:00 
                 GameOver();
             }
         }
