@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public GameObject activeMenu;
     public GameObject activeCanvas, previousCanvas;
-    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, gameOverCanvas, chaosMeterObj;
+    public GameObject startMenuCanvas, pauseMenuCanvas, optionsMenuCanvas, creditsMenuCanvas, gameOverCanvas, chaosMeterObj;
 
     [Header("Score System")]
     public int currentScore = 0;
@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
         startMenuCanvas.SetActive(true);
         pauseMenuCanvas.SetActive(false);
         optionsMenuCanvas.SetActive(false);
+        creditsMenuCanvas.SetActive(false);
         gameOverCanvas.SetActive(false);
         scoreText.gameObject.SetActive(false);
         timerText.gameObject.SetActive(false);
@@ -205,6 +206,13 @@ public class GameManager : MonoBehaviour
             activeCanvas = previousCanvas;
             activeCanvas.SetActive(true);
         }
+        // Close credits menu
+        else if ((Input.GetButtonDown("Cancel") || (Input.GetKeyDown(KeyCode.P))) && activeCanvas == creditsMenuCanvas)
+        {
+            creditsMenuCanvas.SetActive(false);
+            activeCanvas = previousCanvas;
+            activeCanvas.SetActive(true);
+        }
     }
     private void Pause()
     {
@@ -249,6 +257,19 @@ public class GameManager : MonoBehaviour
 
         optionsMenuCanvas.SetActive(true);
         activeCanvas = optionsMenuCanvas;
+
+        if (previousCanvas != null)
+        {
+            previousCanvas.SetActive(false);
+        }
+    }
+
+    public void CreditsMenu()
+    {
+        previousCanvas = activeCanvas;
+
+        creditsMenuCanvas.SetActive(true);
+        activeCanvas = creditsMenuCanvas;
 
         if (previousCanvas != null)
         {

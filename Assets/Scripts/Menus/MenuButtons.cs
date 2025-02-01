@@ -19,6 +19,11 @@ public class MenuButtons : MonoBehaviour
         GameManager.Instance.OptionsMenu();
     }
 
+    public void Credits()
+    {
+        GameManager.Instance.CreditsMenu();
+    }
+
     public void Quit()
     {
         // TODO: Return to the main menu for WebGL builds
